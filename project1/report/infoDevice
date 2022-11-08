@@ -1,0 +1,14 @@
+Device: NVIDIA GeForce GTX 1050 Ti
+  CUDA Driver Version: 11.4
+  Runtime Version: 11.2
+  CUDA Capability Major/Minor version number: 6.1
+  6 Multiprocessors (SM)
+  Max Grid sizes: 2 147 483 647, 65 535, 65 535
+  Max Block sizes: 1024, 1024, 64
+  Max Blocks per SM: 32
+  Max threads per Block: 1024 
+  Warp size: 32
+  Total global memory: 4 137 024 MB
+  Shared Mem per SM: 98 304
+  Max ShMem per Block: 49 152
+
