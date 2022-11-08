@@ -68,18 +68,16 @@ void writeTemp(float *T, int h, int w, int n) {
 
 int main()
 {
-    const int nx = 100; // 200;   // Width of the area
-    const int ny = 100; // 200;   // Height of the area
-
-    const float a = 0.5;     // Diffusion constant
-
-    const float h = 0.01; // 0.005;   // h=dx=dy  grid spacing
+    const int nx = 200;// Width of the area
+    const int ny = 200;// Height of the area
+    const float a = 0.5;// Diffusion constant
+    const float h = 0.005;// h=dx=dy  grid spacing
+    const int numSteps = 100000;// Number of time steps to simulate (time=numSteps*dt)
+    const int outputEvery = 100000;// How frequently to write output image
 
     const float h2 = h*h;
 
     const float dt =  h2 / (4.0 * a); // Largest stable time step
-    const int numSteps = 100000;      // Number of time steps to simulate (time=numSteps*dt)
-    const int outputEvery = 100000;   // How frequently to write output image
 
     int numElements = nx*ny;
 
