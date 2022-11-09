@@ -25,9 +25,9 @@
 \title{Performance enhancement using CUDA in a simulation of heat diffusion}
 
 \author{
-\IEEEauthorblockN{Gonçalo Lourenço \\ nº55780 \\ gm.lourenco@campus.fct.unl.pt}
-\and
-\IEEEauthorblockN{Joana Faria \\ nº55754 \\ js.faria@campus.fct.unl.pt}
+  \IEEEauthorblockN{Gonçalo Lourenço \\ nº55780 \\ gm.lourenco@campus.fct.unl.pt}
+  \and
+  \IEEEauthorblockN{Joana Faria \\ nº55754 \\ js.faria@campus.fct.unl.pt}
 }
 
 \maketitle
@@ -54,7 +54,7 @@ By a quick analysis of the code, we expect the cycle present in the \texttt{main
 
 The average execution time obtained with this version is 153.979 seconds.
 
-\subsection{V1 Version}
+\subsection{V1 Version - CUDA}
 Next, we make a naive translation of the sequential code to \texttt{CUDA} code, which can be found in \texttt{proj1/v1.cu}. This implementation was based on the tutorial provided with the project, with some adaptations.\cite{SolvingHeatEquation}
 
 With this version, we experimented with a variety of grid configurations. We follow \texttt{Nvidia} recommendations\cite{CUDABestPractices}:
@@ -96,14 +96,23 @@ For the sake of completeness, we tested with blocks smaller than 68 threads, and
 
 Analyzing this version using the profiling tool \texttt{NVPROF} we can conclude that the majority of execution time is spent in communication between the host and the device, with only  22.19\% of the execution time dedicated to kernel execution. The program spends 41.74\% of time copying data from the host to the device and 36.07\% from the device to the host. The complete results are available at \texttt{results/v1/nvprof\_results}.
 
-\subsection{V2 Version}
+\subsection{V2 Version - Better comunication}
 In this version, we intend to improve the previous naive implementation, reducing the communication between the host and the device, which we detect to be a big problem in the previous version. In this problem, there aren't any computations needed between the steps so we don't need to transfer the data to the host between steps.
 
 As expected we got a huge improvement in execution time. This version has an average execution time of 2.106914 seconds. Using \texttt{NVPROF} we can see that now the kernel is executing 100.00\% of the total execution time. The full report is in \texttt{results/v2/nvprof\_results}.
 
-we decided from now on to increase the complexity of the problem by increasing the amount of work. So the new parameters are:
+We decided, from now on, to increase the complexity of the problem by increasing the amount of work, to better spot the improvements. So we define \texttt{numSteps = 100000}, and maintain the output of the image in the beginning and end.
 
-\lstinputlisting[language=C,style=c, firstline=100, lastline=105]{../proj1/v2.cu}
+With this new parameter, the average execution time is 25.280373 seconds.
+
+\subsection{V3 Version - Shared Memory}
+Looking deeper into our current solution we realize that the same array position is accessed by five different threads, thus revealing a great opportunity for the use of shared memory.
+
+In this version, we take advantage of the shared memory between threads of the same block. Each thread starts by coping a value to the shared memory and after synchronization, the thread computes the designated value.
+
+This version had an average execution time of 2.199574 seconds, which doesn't show any improvement from the previous version. This may be because of the overhead introduced by copying each element and the threads' synchronization is not balanced by faster access to the shared memory.
+
+\subsection{V4 Version - Streams}
 
 
 \section{Results}
@@ -112,45 +121,46 @@ we decided from now on to increase the complexity of the problem by increasing t
   \centering
   \begin{subfigure}[b]{0.24\textwidth}
     \resizebox{\textwidth}{!}{%
-    \begin{tikzpicture}
+      \begin{tikzpicture}
 
-      \begin{axis}[
-          ylabel={Execution time (seconds)},
-          xlabel={Version},
-          symbolic x coords={Sequential, V1, V2},
-          xtick=data,
-        ]
-        \addplot[ybar,fill=blue] coordinates {
-            (Sequential,   153.979491)
-            (V1,  33.376915)
-            (V2,   2.106914)
-          };
-      \end{axis}
-    \end{tikzpicture}
+        \begin{axis}[
+            ylabel={Execution time (seconds)},
+            xlabel={Version},
+            symbolic x coords={Sequential, V1, V2},
+            xtick=data,
+          ]
+          \addplot[ybar,fill=blue] coordinates {
+              (Sequential,   153.979491)
+              (V1,  33.376915)
+              (V2,   2.106914)
+            };
+        \end{axis}
+      \end{tikzpicture}
     }%
-    \caption{Execution time of sequential version, V1 e V2}
+    \caption{Execution time of sequential version, V1, and V2}
     \label{fig:executionTimeCompareA}
   \end{subfigure}
   \begin{subfigure}[b]{0.24\textwidth}
     \resizebox{\textwidth}{!}{%
-    \begin{tikzpicture}
+      \begin{tikzpicture}
 
-      \begin{axis}[
-          ylabel={Execution time (seconds)},
-          xlabel={Version},
-          symbolic x coords={V2},
-          xtick=data
-        ]
-        \addplot[ybar,fill=blue] coordinates {
-            (V2,   2.106914)
-          };
-      \end{axis}
-    \end{tikzpicture}
+        \begin{axis}[
+            ylabel={Execution time (seconds)},
+            xlabel={Version},
+            symbolic x coords={V2, V3},
+            xtick=data
+          ]
+          \addplot[ybar,fill=blue] coordinates {
+              (V2,   2.106914)
+              (V3,  2.199574 )
+            };
+        \end{axis}
+      \end{tikzpicture}
     }%
     \caption{Execution time of V2, V3, V4 and V5}
     \label{fig:executionTimeCompareB}
   \end{subfigure}
-  
+
   \caption{Execution time of the different versions}
   \label{fig:executionTimeCompare}
 \end{figure}

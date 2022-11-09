@@ -9,3 +9,20 @@ Iteration 7 took 2.103119 seconds
 Iteration 8 took 2.102408 seconds
 Iteration 9 took 2.104004 seconds
 Average time: 2.106914
+
+
+-----------------------------------------------------------------
+const int numSteps = 1000000;    // Number of time steps to simulate (time=numSteps*dt)
+
+
+Iteration 0 took 25.191201 seconds
+Iteration 1 took 25.189869 seconds
+Iteration 2 took 25.290735 seconds
+Iteration 3 took 25.293532 seconds
+Iteration 4 took 25.291065 seconds
+Iteration 5 took 25.291903 seconds
+Iteration 6 took 25.314395 seconds
+Iteration 7 took 25.317317 seconds
+Iteration 8 took 25.312546 seconds
+Iteration 9 took 25.311165 seconds
+Average time: 25.280373
