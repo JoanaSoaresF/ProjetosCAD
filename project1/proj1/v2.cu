@@ -14,7 +14,7 @@
 #include "pngwriter.h"
 #endif
 
-#define NUM_ITERATIONS 10
+#define NUM_ITERATIONS 1
 
 /* Convert 2D index layout to unrolled 1D layout
  *
@@ -95,11 +95,11 @@ __global__ void evolve_kernel(const float *Tn, float *Tnp1, const int nx, const 
 
 int main()
 {
-    const int nx = 500;             // Width of the area
-    const int ny = 500;             // Height of the area
+    const int nx = 200;             // Width of the area
+    const int ny = 200;             // Height of the area
     const float a = 0.5;            // Diffusion constant
     const float h = 0.005;          // h=dx=dy  grid spacing
-    const int numSteps = 1000000;   // Number of time steps to simulate (time=numSteps*dt)
+    const int numSteps = 100000;    // Number of time steps to simulate (time=numSteps*dt)
     const int outputEvery = 100000; // How frequently to write output image
 
     const float h2 = h * h;

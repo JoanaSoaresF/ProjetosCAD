@@ -16,7 +16,7 @@
 
 #define BLOCK_SIZE_X 16
 #define BLOCK_SIZE_Y 16
-#define NUM_ITERATIONS 10
+#define NUM_ITERATIONS 1
 
 /* Convert 2D index layout to unrolled 1D layout
  *
@@ -110,7 +110,7 @@ int main()
 
     int numElements = nx * ny;
     // Allocate two sets of data for current and next timesteps
-    dim3 threadsPerBlock(2, 2);
+    dim3 threadsPerBlock(16, 16);
     dim3 numBlocks(nx / threadsPerBlock.x + 1, ny / threadsPerBlock.y + 1);
 
     double totalTime = 0;

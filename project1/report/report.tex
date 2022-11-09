@@ -94,12 +94,12 @@ For the sake of completeness, we tested with blocks smaller than 68 threads, and
   \label{fig:executionTimeV1}
 \end{figure}
 
-Analyzing this version using the profiling tool \texttt{NVPROF} we can conclude that the majority of execution time is spent in communication between the host and the device, with only 5.43\% of the execution time dedicated to kernel execution. The program spends 50.73\% of time copying data from the host to the device and 43.84\% from the device to the host. The complete results are available at \texttt{results/v1/nvprof\_results}.
+Analyzing this version using the profiling tool \texttt{NVPROF} we can conclude that the majority of execution time is spent in communication between the host and the device, with only  22.19\% of the execution time dedicated to kernel execution. The program spends 41.74\% of time copying data from the host to the device and 36.07\% from the device to the host. The complete results are available at \texttt{results/v1/nvprof\_results}.
 
 \subsection{V2 Version}
 In this version, we intend to improve the previous naive implementation, reducing the communication between the host and the device, which we detect to be a big problem in the previous version. In this problem, there aren't any computations needed between the steps so we don't need to transfer the data to the host between steps.
 
-As expected we got a huge improvement in execution time. This version has an average execution time of 0.424355 seconds. Using \texttt{NVPROF} we can see that now the kernel is executing 99.98\% of the total execution time. The full report is in \texttt{results/v2/nvprof\_results}.
+As expected we got a huge improvement in execution time. This version has an average execution time of 2.106914 seconds. Using \texttt{NVPROF} we can see that now the kernel is executing 100.00\% of the total execution time. The full report is in \texttt{results/v2/nvprof\_results}.
 
 we decided from now on to increase the complexity of the problem by increasing the amount of work. So the new parameters are:
 
@@ -123,7 +123,7 @@ we decided from now on to increase the complexity of the problem by increasing t
         \addplot[ybar,fill=blue] coordinates {
             (Sequential,   153.979491)
             (V1,  33.376915)
-            (V2,   0.424355)
+            (V2,   2.106914)
           };
       \end{axis}
     \end{tikzpicture}
@@ -138,13 +138,11 @@ we decided from now on to increase the complexity of the problem by increasing t
       \begin{axis}[
           ylabel={Execution time (seconds)},
           xlabel={Version},
-          symbolic x coords={Sequential, V1, V2},
+          symbolic x coords={V2},
           xtick=data
         ]
         \addplot[ybar,fill=blue] coordinates {
-            (Sequential,   153.979491)
-            (V1,  33.376915)
-            (V2,   0.424355)
+            (V2,   2.106914)
           };
       \end{axis}
     \end{tikzpicture}
