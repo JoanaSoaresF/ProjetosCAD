@@ -1,0 +1,20 @@
+Iteration 0 took 0.504390 seconds
+Iteration 1 took 0.416963 seconds
+Iteration 2 took 0.415515 seconds
+Iteration 3 took 0.415252 seconds
+Iteration 4 took 0.415265 seconds
+Iteration 5 took 0.415255 seconds
+Iteration 6 took 0.416090 seconds
+Iteration 7 took 0.414826 seconds
+Iteration 8 took 0.415071 seconds
+Iteration 9 took 0.414926 seconds
+Average time: 0.424355
+
+---------------------------------------------------
+const int nx = 500;
+const int ny = 500;
+const int numSteps = 1000000;
+const int outputEvery = 100000;  
+
+
+

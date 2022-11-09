@@ -54,10 +54,10 @@ void write_pgm(FILE *f, float *img, int width, int height, int maxcolors) {
 void writeTemp(float *T, int h, int w, int n) {
     char filename[64];
 #ifdef PNG
-    sprintf(filename, "heat_%06d.png", n);
+    sprintf(filename, "../images/sequential/heat_%06d.pgm", n);
     save_png(T, h, w, filename, 'c');
 #else
-    sprintf(filename, "heat_%06d.pgm", n);
+    sprintf(filename, "../images/sequential/heat_%06d.pgm", n);
     FILE *f=fopen(filename, "w");
     write_pgm(f, T, w, h, 100);
     fclose(f);
@@ -109,10 +109,10 @@ int main()
             {
                 const int index = getIndex(i, j, ny);
                 float tij = Tn[index];
-                float tim1j = Tn[getIndex(i-1, j, ny)];
-                float tijm1 = Tn[getIndex(i, j-1, ny)];
-                float tip1j = Tn[getIndex(i+1, j, ny)];
-                float tijp1 = Tn[getIndex(i, j+1, ny)];
+                float tim1j = Tn[getIndex(i - 1, j, ny)];
+                float tijm1 = Tn[getIndex(i, j - 1, ny)];
+                float tip1j = Tn[getIndex(i + 1, j, ny)];
+                float tijp1 = Tn[getIndex(i, j + 1, ny)];
 
                 Tnp1[index] = tij + a * dt * ( (tim1j + tip1j + tijm1 + tijp1 - 4.0*tij)/h2 );
             }

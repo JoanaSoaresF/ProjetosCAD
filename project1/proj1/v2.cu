@@ -14,8 +14,6 @@
 #include "pngwriter.h"
 #endif
 
-#define BLOCK_SIZE_X 16
-#define BLOCK_SIZE_Y 16
 #define NUM_ITERATIONS 10
 
 /* Convert 2D index layout to unrolled 1D layout
@@ -64,10 +62,10 @@ void writeTemp(float *T, int h, int w, int n)
 {
     char filename[64];
 #ifdef PNG
-    sprintf(filename, "../images/v1/heat_%06d.pgm", n);
+    sprintf(filename, "../images/v2/heat_%06d.pgm", n);
     save_png(T, h, w, filename, 'c');
 #else
-    sprintf(filename, "../images/v1/heat_%06d.pgm", n);
+    sprintf(filename, "../images/v2/heat_%06d.pgm", n);
     FILE *f = fopen(filename, "w");
     write_pgm(f, T, w, h, 100);
     fclose(f);
@@ -97,11 +95,11 @@ __global__ void evolve_kernel(const float *Tn, float *Tnp1, const int nx, const 
 
 int main()
 {
-    const int nx = 200;             // Width of the area
-    const int ny = 200;             // Height of the area
+    const int nx = 500;             // Width of the area
+    const int ny = 500;             // Height of the area
     const float a = 0.5;            // Diffusion constant
     const float h = 0.005;          // h=dx=dy  grid spacing
-    const int numSteps = 100000;    // Number of time steps to simulate (time=numSteps*dt)
+    const int numSteps = 1000000;   // Number of time steps to simulate (time=numSteps*dt)
     const int outputEvery = 100000; // How frequently to write output image
 
     const float h2 = h * h;
@@ -110,7 +108,8 @@ int main()
 
     int numElements = nx * ny;
     // Allocate two sets of data for current and next timesteps
-    dim3 threadsPerBlock(2, 2);
+
+    dim3 threadsPerBlock(16, 16);
     dim3 numBlocks(nx / threadsPerBlock.x + 1, ny / threadsPerBlock.y + 1);
 
     double totalTime = 0;
@@ -129,8 +128,8 @@ int main()
         float *d_Tnp1;
         cudaMalloc((void **)&d_Tn, numElements * sizeof(float));
         cudaMalloc((void **)&d_Tnp1, numElements * sizeof(float));
-
-        writeTemp(h_Tn, nx, ny, 0);
+        cudaMemcpy(d_Tn, h_Tn, numElements * sizeof(float), cudaMemcpyHostToDevice);
+        cudaMemcpy(d_Tnp1, h_Tnp1, numElements * sizeof(float), cudaMemcpyHostToDevice);
 
         // Timing
         clock_t start = clock();
@@ -139,13 +138,8 @@ int main()
 
         for (int n = 0; n <= numSteps; n++)
         {
-            cudaMemcpy(d_Tn, h_Tn, numElements * sizeof(float), cudaMemcpyHostToDevice);
-            cudaMemcpy(d_Tnp1, h_Tnp1, numElements * sizeof(float), cudaMemcpyHostToDevice);
 
             evolve_kernel<<<numBlocks, threadsPerBlock>>>(d_Tn, d_Tnp1, nx, ny, a, h2, dt);
-
-            cudaMemcpy(h_Tn, d_Tn, numElements * sizeof(float), cudaMemcpyDeviceToHost);
-            cudaMemcpy(h_Tnp1, d_Tnp1, numElements * sizeof(float), cudaMemcpyDeviceToHost);
 
             // Check if any error occurred during execution
             cudaError_t errorCode = cudaGetLastError();
@@ -157,12 +151,21 @@ int main()
 
             // Write the output if needed
             if ((n + 1) % outputEvery == 0)
+            {
+                cudaMemcpy(h_Tn, d_Tn, numElements * sizeof(float), cudaMemcpyDeviceToHost);
+                cudaMemcpy(h_Tnp1, d_Tnp1, numElements * sizeof(float), cudaMemcpyDeviceToHost);
+                if (errorCode != cudaSuccess)
+                {
+                    printf("Cuda error %d: %s\n", errorCode, cudaGetErrorString(errorCode));
+                    exit(0);
+                }
                 writeTemp(h_Tnp1, nx, ny, n + 1);
+            }
 
             // Swapping the pointers for the next timestep
-            float *t = h_Tn;
-            h_Tn = h_Tnp1;
-            h_Tnp1 = t;
+            float *t = d_Tn;
+            d_Tn = d_Tnp1;
+            d_Tnp1 = t;
         }
 
         // Timing

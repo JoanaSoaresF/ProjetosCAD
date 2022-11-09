@@ -1,0 +1,42 @@
+==206306== NVPROF is profiling process 206306, command: ./v1
+Iteration 0 took 41.982047 seconds
+Average time: 41.982047
+==206306== Profiling application: ./v1
+==206306== Profiling result:
+            Type  Time(%)      Time     Calls       Avg       Min       Max  Name
+ GPU activities:   50.73%  5.53651s    200002  27.682us  27.423us  28.319us  [CUDA memcpy HtoD]
+                   43.84%  4.78427s    200002  23.921us  23.839us  24.224us  [CUDA memcpy DtoH]
+                    5.43%  592.43ms    100001  5.9240us  4.0640us  6.4640us  evolve_kernel(float const *, float*, int, int, float, float, float)
+      API calls:   94.10%  32.8814s    400004  82.202us  52.234us  2.1286ms  cudaMemcpy
+                    4.88%  1.70487s    100001  17.048us  16.269us  709.34us  cudaLaunchKernel
+                    0.87%  305.66ms         2  152.83ms  10.078us  305.65ms  cudaMalloc
+                    0.15%  51.667ms    100001     516ns     405ns  694.05us  cudaGetLastError
+                    0.00%  349.45us       101  3.4590us     260ns  193.86us  cuDeviceGetAttribute
+                    0.00%  294.58us         1  294.58us  294.58us  294.58us  cuDeviceTotalMem
+                    0.00%  248.87us         2  124.43us  30.226us  218.64us  cudaFree
+                    0.00%  46.907us         1  46.907us  46.907us  46.907us  cuDeviceGetName
+                    0.00%  14.415us         1  14.415us  14.415us  14.415us  cuDeviceGetPCIBusId
+                    0.00%  2.5420us         3     847ns     447ns  1.5800us  cuDeviceGetCount
+                    0.00%  1.3940us         2     697ns     320ns  1.0740us  cuDeviceGet
+                    0.00%     625ns         1     625ns     625ns     625ns  cuDeviceGetUuid
+==208369== NVPROF is profiling process 208369, command: ./v1
+Iteration 0 took 41.713187 seconds
+Average time: 41.713187
+==208369== Profiling application: ./v1
+==208369== Profiling result:
+            Type  Time(%)      Time     Calls       Avg       Min       Max  Name
+ GPU activities:   50.73%  5.53714s    200002  27.685us  27.423us  28.415us  [CUDA memcpy HtoD]
+                   43.84%  4.78478s    200002  23.923us  23.839us  24.447us  [CUDA memcpy DtoH]
+                    5.43%  592.94ms    100001  5.9290us  4.0640us  6.4640us  evolve_kernel(float const *, float*, int, int, float, float, float)
+      API calls:   93.92%  32.6752s    400004  81.687us  53.180us  2.1095ms  cudaMemcpy
+                    4.97%  1.72811s    100001  17.280us  16.535us  713.75us  cudaLaunchKernel
+                    0.96%  334.64ms         2  167.32ms  12.507us  334.63ms  cudaMalloc
+                    0.15%  52.669ms    100001     526ns     429ns  698.85us  cudaGetLastError
+                    0.00%  353.90us       101  3.5030us     262ns  198.05us  cuDeviceGetAttribute
+                    0.00%  295.52us         1  295.52us  295.52us  295.52us  cuDeviceTotalMem
+                    0.00%  254.18us         2  127.09us  29.236us  224.94us  cudaFree
+                    0.00%  51.774us         1  51.774us  51.774us  51.774us  cuDeviceGetName
+                    0.00%  14.357us         1  14.357us  14.357us  14.357us  cuDeviceGetPCIBusId
+                    0.00%  2.2930us         3     764ns     373ns  1.5220us  cuDeviceGetCount
+                    0.00%  1.4890us         2     744ns     336ns  1.1530us  cuDeviceGet
+                    0.00%     613ns         1     613ns     613ns     613ns  cuDeviceGetUuid

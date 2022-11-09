@@ -1,6 +1,17 @@
 \documentclass[conference]{IEEEtran}
 
 \usepackage{listings}
+\usepackage{pgfplots}
+\usepackage{hyperref}
+\usepackage{caption}
+\usepackage{subcaption}
+
+\usepackage[
+  backend=biber,
+  style=ieee,
+  sorting=none
+]{biblatex}
+\addbibresource{CAD.bib}
 
 \usepackage{c/style} % include custom style for C.
 \lstset{basicstyle=\footnotesize\ttfamily,
@@ -14,9 +25,9 @@
 \title{Performance enhancement using CUDA in a simulation of heat diffusion}
 
 \author{
-  \IEEEauthorblockN{Gonçalo Lourenço \\ nº55780 \\ gm.lourenco@campus.fct.unl.pt}
-  \and
-  \IEEEauthorblockN{Joana Faria \\ nº55754 \\ js.faria@campus.fct.unl.pt}
+\IEEEauthorblockN{Gonçalo Lourenço \\ nº55780 \\ gm.lourenco@campus.fct.unl.pt}
+\and
+\IEEEauthorblockN{Joana Faria \\ nº55754 \\ js.faria@campus.fct.unl.pt}
 }
 
 \maketitle
@@ -43,12 +54,115 @@ By a quick analysis of the code, we expect the cycle present in the \texttt{main
 
 The average execution time obtained with this version is 153.979 seconds.
 
+\subsection{V1 Version}
+Next, we make a naive translation of the sequential code to \texttt{CUDA} code, which can be found in \texttt{proj1/v1.cu}. This implementation was based on the tutorial provided with the project, with some adaptations.\cite{SolvingHeatEquation}
+
+With this version, we experimented with a variety of grid configurations. We follow \texttt{Nvidia} recommendations\cite{CUDABestPractices}:
+
+\begin{itemize}
+  \item Threads per block should be a multiple of warp size to avoid wasting computation on under-populated warps and to facilitate coalescing.
+  \item A minimum of 64 threads per block should be used, and only if there are multiple concurrent blocks per multiprocessor.
+  \item Between 128 and 256 threads per block is a good initial range for experimentation with different block sizes.
+\end{itemize}
+
+So we start with a configuration having 256 threads per block and we test until the maximum of 1024 threads per block. We didn't find significant differences between these configurations.
+
+For the sake of completeness, we tested with blocks smaller than 68 threads, and, as expected, we got worse results. The results are summarized in \autoref{fig:executionTimeV1}
+
+
+\begin{figure}[ht]
+  \centering
+  \begin{tikzpicture}
+
+    \begin{axis}[
+        ylabel={Execution time (seconds)},
+        xlabel={Threads per block},
+        symbolic x coords={1,4, 16, 64, 256, 1024},
+        xtick=data
+      ]
+      \addplot[ybar,fill=blue] coordinates {
+          (1,   84.463241)
+          (4,   46.764692)
+          (16,  36.538622)
+          (64,   35.454548)
+          (256,   35.763267)
+          (1024,   36.727775)
+        };
+    \end{axis}
+  \end{tikzpicture}
+  \caption{Execution time of different grid configurations for V1}
+  \label{fig:executionTimeV1}
+\end{figure}
+
+Analyzing this version using the profiling tool \texttt{NVPROF} we can conclude that the majority of execution time is spent in communication between the host and the device, with only 5.43\% of the execution time dedicated to kernel execution. The program spends 50.73\% of time copying data from the host to the device and 43.84\% from the device to the host. The complete results are available at \texttt{results/v1/nvprof\_results}.
+
+\subsection{V2 Version}
+In this version, we intend to improve the previous naive implementation, reducing the communication between the host and the device, which we detect to be a big problem in the previous version. In this problem, there aren't any computations needed between the steps so we don't need to transfer the data to the host between steps.
+
+As expected we got a huge improvement in execution time. This version has an average execution time of 0.424355 seconds. Using \texttt{NVPROF} we can see that now the kernel is executing 99.98\% of the total execution time. The full report is in \texttt{results/v2/nvprof\_results}.
+
+we decided from now on to increase the complexity of the problem by increasing the amount of work. So the new parameters are:
+
+\lstinputlisting[language=C,style=c, firstline=100, lastline=105]{../proj1/v2.cu}
+
+
+\section{Results}
+
+\begin{figure}[ht]
+  \centering
+  \begin{subfigure}[b]{0.24\textwidth}
+    \resizebox{\textwidth}{!}{%
+    \begin{tikzpicture}
+
+      \begin{axis}[
+          ylabel={Execution time (seconds)},
+          xlabel={Version},
+          symbolic x coords={Sequential, V1, V2},
+          xtick=data,
+        ]
+        \addplot[ybar,fill=blue] coordinates {
+            (Sequential,   153.979491)
+            (V1,  33.376915)
+            (V2,   0.424355)
+          };
+      \end{axis}
+    \end{tikzpicture}
+    }%
+    \caption{Execution time of sequential version, V1 e V2}
+    \label{fig:executionTimeCompareA}
+  \end{subfigure}
+  \begin{subfigure}[b]{0.24\textwidth}
+    \resizebox{\textwidth}{!}{%
+    \begin{tikzpicture}
+
+      \begin{axis}[
+          ylabel={Execution time (seconds)},
+          xlabel={Version},
+          symbolic x coords={Sequential, V1, V2},
+          xtick=data
+        ]
+        \addplot[ybar,fill=blue] coordinates {
+            (Sequential,   153.979491)
+            (V1,  33.376915)
+            (V2,   0.424355)
+          };
+      \end{axis}
+    \end{tikzpicture}
+    }%
+    \caption{Execution time of V2, V3, V4 and V5}
+    \label{fig:executionTimeCompareB}
+  \end{subfigure}
+  
+  \caption{Execution time of the different versions}
+  \label{fig:executionTimeCompare}
+\end{figure}
 
 
 
 
 
 
+\printbibliography
 
 
 \end{document}
