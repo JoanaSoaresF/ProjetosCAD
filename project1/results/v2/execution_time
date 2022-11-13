@@ -26,3 +26,52 @@ Iteration 7 took 25.317317 seconds
 Iteration 8 took 25.312546 seconds
 Iteration 9 took 25.311165 seconds
 Average time: 25.280373
+
+
+----------------------------------------------------------------------
+const int nx = 2000;             // Width of the area
+const int ny = 2000;             // Height of the area
+
+Iteration 0 took 191.477151 seconds
+Iteration 1 took 191.505139 seconds
+Iteration 2 took 191.942965 seconds
+Iteration 3 took 192.072453 seconds
+Iteration 4 took 191.850636 seconds
+Iteration 5 took 192.136599 seconds
+Iteration 6 took 192.218554 seconds
+Iteration 7 took 192.643329 seconds
+Iteration 8 took 192.573352 seconds
+Iteration 9 took 192.598739 seconds
+Average time: 192.101892
+
+
+-----------------------------------------------------------------------
+const int outputEvery = 1000; // How frequently to write output image
+
+Iteration 0 took 2.697587 seconds
+Iteration 1 took 2.640921 seconds
+Iteration 2 took 2.640475 seconds
+Iteration 3 took 2.650253 seconds
+Iteration 4 took 2.645296 seconds
+Iteration 5 took 2.639009 seconds
+Iteration 6 took 2.638945 seconds
+Iteration 7 took 2.654429 seconds
+Iteration 8 took 2.650600 seconds
+Iteration 9 took 2.647214 seconds
+Average time: 2.650473
+
+-----------------------------------------------------------------------
+const int outputEvery = 100; // How frequently to write output image
+
+
+Iteration 0 took 8.352022 seconds
+Iteration 1 took 8.399849 seconds
+Iteration 2 took 8.392139 seconds
+Iteration 3 took 8.427748 seconds
+Iteration 4 took 8.495220 seconds
+Iteration 5 took 8.428292 seconds
+Iteration 6 took 8.448005 seconds
+Iteration 7 took 8.409172 seconds
+Iteration 8 took 8.386585 seconds
+Iteration 9 took 8.366231 seconds
+Average time: 8.410526

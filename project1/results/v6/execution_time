@@ -1,0 +1,12 @@
+const int outputEvery = 100; // How frequently to write output image
+Iteration 0 took 8.460652 seconds
+Iteration 1 took 8.460203 seconds
+Iteration 2 took 8.379574 seconds
+Iteration 3 took 8.525142 seconds
+Iteration 4 took 8.449621 seconds
+Iteration 5 took 8.582442 seconds
+Iteration 6 took 8.544974 seconds
+Iteration 7 took 8.479317 seconds
+Iteration 8 took 8.484161 seconds
+Iteration 9 took 8.452562 seconds
+Average time: 8.481865

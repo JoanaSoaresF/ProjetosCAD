@@ -1,0 +1,18 @@
+Iteration 0 took 2.302051 seconds
+Iteration 1 took 2.213911 seconds
+Iteration 2 took 2.214817 seconds
+Iteration 3 took 2.215004 seconds
+Iteration 4 took 2.213617 seconds
+Iteration 5 took 2.227294 seconds
+Iteration 6 took 2.225902 seconds
+Iteration 7 took 2.230204 seconds
+Iteration 8 took 2.228688 seconds
+Iteration 9 took 2.232004 seconds
+Average time: 2.230349
+
+------------------------------------------------------------------------------
+const int nx = 2000;             // Width of the area
+const int ny = 2000;             // Height of the area
+
+Cuda error streams 700: an illegal memory access was encountered
+Cuda error streams 700: an illegal memory access was encountered

@@ -113,11 +113,20 @@ In this version, we take advantage of the shared memory between threads of the s
 This version had an average execution time of 2.199574 seconds, which doesn't show any improvement from the previous version. This may be because of the overhead introduced by copying each element and the threads' synchronization is not balanced by faster access to the shared memory.
 
 \subsection{V4 Version - Streams}
-After analyzing our version with shared memory we focused decided to add Streams to this version despite not expecting any big improvement when working with a small grid.
+After analyzing our version with shared memory we focused decided to add streams to this version despite not expecting any big improvement when working with a small grid.
 
-Our implementation adds streams that allow the Device to run as soon as the first partition of our table is downloaded. Since our function works with smaller squares we have a two-dimension cycle in order to copy the necessary data.
+Our implementation adds streams that allow the device to run as soon as the first partition of our table is downloaded. Since our function works with smaller squares we have a two-dimension cycle in order to copy the necessary data.
 
-We were already expecting the results we got, an average execution time of 2.228125 seconds when using 16 streams (4*4). Even if it is worse than our previous time, it's to be expected because our grid is too small. The majority of the time is spent on the execution of steps, so, the time saved in execution doesn't balance the time lost with the creation and initialization of streams.
+We were already expecting the results we got, an average execution time of 2.230349 seconds when using 16 streams (4*4). Even if it is worse than our previous time, it's to be expected because our grid is too small. The majority of the time is spent on the execution of steps, so, the time saved in execution doesn't balance the time lost with the creation and initialization of streams.
+
+
+
+
+% V6 comment
+% TODO Avabar V6
+We expect streams to prove advantageous when we have a larger amount of data to transfer between the host and the device. To prove this hypothesis we increase the grid size to 2000x2000 and compare the different versions, showing the results in
+
+Another situation in that streams may be helpful is we want the output in intermediate steps, allowing the communication to overlap with the computation of the next step. So, once again, we rerun the different version with \texttt{outputEvery = 1000} to compare the execution time. The results can be seen in 
 
 \section{Results}
 
@@ -151,12 +160,13 @@ We were already expecting the results we got, an average execution time of 2.228
         \begin{axis}[
             ylabel={Execution time (seconds)},
             xlabel={Version},
-            symbolic x coords={V2, V3},
+symbolic x coords={V2, V3, V4},
             xtick=data
           ]
           \addplot[ybar,fill=blue] coordinates {
               (V2,   2.106914)
               (V3,  2.199574 )
+(V4, 2.230349)
             };
         \end{axis}
       \end{tikzpicture}

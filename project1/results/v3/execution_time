@@ -43,3 +43,20 @@ Iteration 7 took 2.189749 seconds
 Iteration 8 took 2.189465 seconds
 Iteration 9 took 2.189703 seconds
 Average time: 2.198981
+
+
+------------------------------------------------------------------------------
+const int nx = 2000;             // Width of the area
+const int ny = 2000;             // Height of the area
+
+Iteration 0 took 236.521745 seconds
+Iteration 1 took 237.593095 seconds
+Iteration 2 took 237.556918 seconds
+Iteration 3 took 240.328585 seconds
+Iteration 4 took 240.302712 seconds
+Iteration 5 took 240.407607 seconds
+Iteration 6 took 240.593156 seconds
+Iteration 7 took 238.517556 seconds
+Iteration 8 took 238.623524 seconds
+Iteration 9 took 242.670324 seconds
+Average time: 239.311522
