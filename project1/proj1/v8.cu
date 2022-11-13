@@ -14,9 +14,10 @@
 #include "pngwriter.h"
 #endif
 
-#define NUM_ITERATIONS 10
 #define BLOCK_SIZE 16
-#define STREAM_SIZE 2000
+#define NUM_ITERATIONS 1
+#define STREAMCOUNT_X 4
+#define STREAMCOUNT_Y 4
 
 /* Convert 2D index layout to unrolled 1D layout
  *
@@ -64,22 +65,21 @@ void writeTemp(float *T, int h, int w, int n)
 {
     char filename[64];
 #ifdef PNG
-    sprintf(filename, "../images/v6/heat_%06d.pgm", n);
+    sprintf(filename, "../images/v7/heat_%06d.pgm", n);
     save_png(T, h, w, filename, 'c');
 #else
-    sprintf(filename, "../images/v6/heat_%06d.pgm", n);
+    sprintf(filename, "../images/v7/heat_%06d.pgm", n);
     FILE *f = fopen(filename, "w");
     write_pgm(f, T, w, h, 100);
     fclose(f);
 #endif
 }
-
-__global__ void evolve_kernel(const float *Tn, float *Tnp1, const int nx, const int ny, const float a, const float h2, const float dt)
+__global__ void evolve_kernel(int offsetX, int offsetY, const float *Tn, float *Tnp1, const int nx, const int ny, const float a, const float h2, const float dt)
 {
-    int i = threadIdx.x + blockIdx.x * blockDim.x;
+    int i = offsetX + threadIdx.x + blockIdx.x * blockDim.x;
     if (i > 0 && i < nx - 1)
     {
-        int j = threadIdx.y + blockIdx.y * blockDim.y;
+        int j = offsetY + threadIdx.y + blockIdx.y * blockDim.y;
         if (j > 0 && j < ny - 1)
         {
             const int index = getIndex(i, j, ny);
@@ -97,21 +97,19 @@ __global__ void evolve_kernel(const float *Tn, float *Tnp1, const int nx, const 
 
 int main()
 {
-    const int nx = 200;           // Width of the area
-    const int ny = 200;           // Height of the area
-    const float a = 0.5;          // Diffusion constant
-    const float h = 0.005;        // h=dx=dy  grid spacing
-    const int numSteps = 100000;  // Number of time steps to simulate (time=numSteps*dt)
-    const int outputEvery = 1000; // How frequently to write output image
+    const int nx = 200;             // Width of the area
+    const int ny = 200;             // Height of the area
+    const float a = 0.5;            // Diffusion constant
+    const float h = 0.005;          // h=dx=dy  grid spacing
+    const int numSteps = 100000;    // Number of time steps to simulate (time=numSteps*dt)
+    const int outputEvery = 100000; // How frequently to write output image
 
     const float h2 = h * h;
 
     const float dt = h2 / (4.0 * a); // Largest stable time step
 
     int numElements = nx * ny;
-
     // Allocate two sets of data for current and next timesteps
-
     dim3 threadsPerBlock(BLOCK_SIZE, BLOCK_SIZE);
     dim3 numBlocks(nx / threadsPerBlock.x + 1, ny / threadsPerBlock.y + 1);
 
@@ -131,14 +129,20 @@ int main()
         float *d_Tnp1;
         cudaMalloc((void **)&d_Tn, numElements * sizeof(float));
         cudaMalloc((void **)&d_Tnp1, numElements * sizeof(float));
-        cudaMemcpy(d_Tn, h_Tn, numElements * sizeof(float), cudaMemcpyHostToDevice);
-        cudaMemcpy(d_Tnp1, h_Tnp1, numElements * sizeof(float), cudaMemcpyHostToDevice);
 
         writeTemp(h_Tn, nx, ny, 0);
 
+        // Streams
+        // STREAMCOUNT;
+        int streamSize = ceil((nx / STREAMCOUNT_X)) * ceil((ny / STREAMCOUNT_X));
+        int streamSizeX = ceil((nx) / STREAMCOUNT_X);
+        int streamSizeY = ceil((ny) / STREAMCOUNT_Y);
+
         //    Create streams
-        int nStreams = (nx * ny) / STREAM_SIZE;
+        int nStreams = STREAMCOUNT_X * STREAMCOUNT_Y;
         cudaStream_t stream[nStreams];
+        cudaStream_t streamRecive[nStreams];
+
         for (int s = 0; s < nStreams; s++)
         {
             cudaStreamCreate(&stream[s]);
@@ -148,12 +152,38 @@ int main()
         clock_t start = clock();
 
         // Main loop
+        int offsetX, offsetY, offset;
 
         for (int n = 0; n <= numSteps; n++)
         {
-            
-            evolve_kernel<<<numBlocks, threadsPerBlock>>>(d_Tn, d_Tnp1, nx, ny, a, h2, dt);
-            // cudaDeviceSynchronize();
+            // Copy Tn to device
+            for (int ystream = 0; ystream < STREAMCOUNT_Y; ystream++)
+            {
+                offsetY = ystream * streamSizeY;
+
+                for (int xstream = 0; xstream < STREAMCOUNT_X; xstream++)
+                {
+                    offsetX = xstream * streamSizeX;
+
+                    int streamNr = ystream * STREAMCOUNT_X + xstream;
+
+                    for (int cy = 0; cy < streamSizeY + 2; cy++)
+                    {
+                        offset = offsetY * nx + offsetX;
+
+                        // cudaStreamCreate(&streams[streamNr]);
+
+                        // printf("Copying to gpu streamX: %d \n" + xstream);
+                        cudaMemcpyAsync(&d_Tn[offset], &h_Tn[offset], (streamSizeX) * sizeof(float), cudaMemcpyHostToDevice, stream[streamNr]);
+                        cudaMemcpyAsync(&d_Tnp1[offset], &h_Tnp1[offset], (streamSizeX) * sizeof(float), cudaMemcpyHostToDevice, stream[streamNr]);
+                    }
+                    evolve_kernel<<<streamSize / BLOCK_SIZE, threadsPerBlock, 0, stream[i]>>>(offsetX, offsetY, d_Tn, d_Tnp1, nx, ny, a, h2, dt);
+                }
+            }
+            cudaDeviceSynchronize();
+
+            cudaMemcpy(h_Tn, d_Tn, numElements * sizeof(float), cudaMemcpyDeviceToHost);
+            cudaMemcpy(h_Tnp1, d_Tnp1, numElements * sizeof(float), cudaMemcpyDeviceToHost);
 
             // Check if any error occurred during execution
             cudaError_t errorCode = cudaGetLastError();
@@ -164,22 +194,13 @@ int main()
             }
 
             // Write the output if needed
-            if ((n + 1) % outputEvery == 0 && n != 0)
-            {
-
-                for (int s = 0; s < nStreams; s++)
-                {
-                    int offset = s * STREAM_SIZE;
-                    cudaMemcpyAsync(&h_Tn[offset], &d_Tn[offset], STREAM_SIZE * sizeof(float), cudaMemcpyDeviceToHost);
-                }
-
-                writeTemp(h_Tn, nx, ny, n + 1);
-            }
+            if ((n + 1) % outputEvery == 0)
+                writeTemp(h_Tnp1, nx, ny, n + 1);
 
             // Swapping the pointers for the next timestep
-            float *t = d_Tn;
-            d_Tn = d_Tnp1;
-            d_Tnp1 = t;
+            float *t = h_Tn;
+            h_Tn = h_Tnp1;
+            h_Tnp1 = t;
         }
 
         // Timing

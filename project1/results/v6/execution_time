@@ -1,12 +1,79 @@
+const int outputEvery = 1000; // How frequently to write output image
+#define STREAM_SIZE 2000
+
+Iteration 0 took 2.714791 seconds
+Iteration 1 took 2.652643 seconds
+Iteration 2 took 2.650979 seconds
+Iteration 3 took 2.641228 seconds
+Iteration 4 took 2.644394 seconds
+Iteration 5 took 2.637852 seconds
+Iteration 6 took 2.657475 seconds
+Iteration 7 took 2.655909 seconds
+Iteration 8 took 2.652388 seconds
+Iteration 9 took 2.661830 seconds
+Average time: 2.656949
+
+-----------------------------------------------------------------------------------------
 const int outputEvery = 100; // How frequently to write output image
-Iteration 0 took 8.460652 seconds
-Iteration 1 took 8.460203 seconds
-Iteration 2 took 8.379574 seconds
-Iteration 3 took 8.525142 seconds
-Iteration 4 took 8.449621 seconds
-Iteration 5 took 8.582442 seconds
-Iteration 6 took 8.544974 seconds
-Iteration 7 took 8.479317 seconds
-Iteration 8 took 8.484161 seconds
-Iteration 9 took 8.452562 seconds
-Average time: 8.481865
+#define STREAM_SIZE 2000
+
+
+Iteration 0 took 8.345953 seconds
+Iteration 1 took 8.458572 seconds
+Iteration 2 took 8.434702 seconds
+Iteration 3 took 8.508183 seconds
+Iteration 4 took 8.454024 seconds
+Iteration 5 took 8.386601 seconds
+Iteration 6 took 8.513796 seconds
+Iteration 7 took 8.492911 seconds
+Iteration 8 took 8.462129 seconds
+Iteration 9 took 8.507146 seconds
+Average time: 8.456402
+
+--------------------------------------------------------------------------------------------
+const int outputEvery = 1000; // How frequently to write output image
+#define STREAM_SIZE 4000
+
+Iteration 0 took 2.719696 seconds
+Iteration 1 took 2.636048 seconds
+Iteration 2 took 2.672783 seconds
+Iteration 3 took 2.653502 seconds
+Iteration 4 took 2.652056 seconds
+Iteration 5 took 2.674062 seconds
+Iteration 6 took 2.669177 seconds
+Iteration 7 took 2.640053 seconds
+Iteration 8 took 2.652836 seconds
+Iteration 9 took 2.650235 seconds
+Average time: 2.662045
+
+--------------------------------------------------------------------------------------------
+const int outputEvery = 1000; // How frequently to write output image
+#define STREAM_SIZE 10000
+Iteration 0 took 2.703571 seconds
+Iteration 1 took 2.635422 seconds
+Iteration 2 took 2.646617 seconds
+Iteration 3 took 2.639009 seconds
+Iteration 4 took 2.632054 seconds
+Iteration 5 took 2.647587 seconds
+Iteration 6 took 2.639231 seconds
+Iteration 7 took 2.651207 seconds
+Iteration 8 took 2.651452 seconds
+Iteration 9 took 2.640396 seconds
+Average time: 2.648655
+
+---------------------------------------------------------------------------------
+
+const int outputEvery = 1000; // How frequently to write output image
+#define STREAM_SIZE 2000
+cudaDeviceSynchronize();
+Iteration 0 took 3.427168 seconds
+Iteration 1 took 3.351001 seconds
+Iteration 2 took 3.363879 seconds
+Iteration 3 took 3.356471 seconds
+Iteration 4 took 3.354217 seconds
+Iteration 5 took 3.355356 seconds
+Iteration 6 took 3.375058 seconds
+Iteration 7 took 3.380794 seconds
+Iteration 8 took 3.372186 seconds
+Iteration 9 took 3.385944 seconds
+Average time: 3.372207
