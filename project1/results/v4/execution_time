@@ -1,18 +1,70 @@
-Iteration 0 took 2.302051 seconds
-Iteration 1 took 2.213911 seconds
-Iteration 2 took 2.214817 seconds
-Iteration 3 took 2.215004 seconds
-Iteration 4 took 2.213617 seconds
-Iteration 5 took 2.227294 seconds
-Iteration 6 took 2.225902 seconds
-Iteration 7 took 2.230204 seconds
-Iteration 8 took 2.228688 seconds
-Iteration 9 took 2.232004 seconds
-Average time: 2.230349
+I#define BLOCK_SIZE 8
+#define STREAMCOUNT_X 4
+#define STREAMCOUNT_Y 4
 
-------------------------------------------------------------------------------
-const int nx = 2000;             // Width of the area
-const int ny = 2000;             // Height of the area
+Iteration 0 took 2.294306 seconds
+Iteration 1 took 2.209532 seconds
+Iteration 2 took 2.213773 seconds
+Iteration 3 took 2.214370 seconds
+Iteration 4 took 2.213715 seconds
+Iteration 5 took 2.215833 seconds
+Iteration 6 took 2.214900 seconds
+Iteration 7 took 2.219060 seconds
+Iteration 8 took 2.216366 seconds
+Iteration 9 took 2.219456 seconds
+Average time: 2.223131
 
-Cuda error streams 700: an illegal memory access was encountered
-Cuda error streams 700: an illegal memory access was encountered
+-----------------------------------------------------------------------
+
+#define BLOCK_SIZE 16
+#define STREAMCOUNT_X 4
+#define STREAMCOUNT_Y 4
+
+Iteration 0 took 2.302586 seconds
+Iteration 1 took 2.214078 seconds
+Iteration 2 took 2.214667 seconds
+Iteration 3 took 2.214717 seconds
+Iteration 4 took 2.214013 seconds
+Iteration 5 took 2.215150 seconds
+Iteration 6 took 2.216470 seconds
+Iteration 7 took 2.230114 seconds
+Iteration 8 took 2.227402 seconds
+Iteration 9 took 2.232053 seconds
+Average time: 2.228125
+
+-----------------------------------------------------------------------
+
+#define BLOCK_SIZE 32
+#define STREAMCOUNT_X 4
+#define STREAMCOUNT_Y 4
+
+Iteration 0 took 2.760403 seconds
+Iteration 1 took 2.669895 seconds
+Iteration 2 took 2.672790 seconds
+Iteration 3 took 2.673529 seconds
+Iteration 4 took 2.671312 seconds
+Iteration 5 took 2.676251 seconds
+Iteration 6 took 2.673525 seconds
+Iteration 7 took 2.679502 seconds
+Iteration 8 took 2.676257 seconds
+Iteration 9 took 2.680256 seconds
+Average time: 2.683372
+
+-----------------------------------------------------------------------
+20000x20000
+x100
+#define BLOCK_SIZE 16
+#define STREAMCOUNT_X 4
+#define STREAMCOUNT_Y 4
+
+Iteration 0 took 0.041336 seconds
+Iteration 1 took 0.045919 seconds
+Iteration 2 took 0.044121 seconds
+Iteration 3 took 0.055828 seconds
+Iteration 4 took 0.050037 seconds
+Iteration 5 took 0.048778 seconds
+Iteration 6 took 0.053019 seconds
+Iteration 7 took 0.054454 seconds
+Iteration 8 took 0.055910 seconds
+Iteration 9 took 0.058337 seconds
+Average time: 0.050774
