@@ -16,8 +16,8 @@
 
 #define NUM_ITERATIONS 10
 #define BLOCK_SIZE 16
-#define STREAMCOUNT_X 4
-#define STREAMCOUNT_Y 4
+#define STREAMCOUNT_X 8
+#define STREAMCOUNT_Y 8
 //#define STREAMCOUNT = STREAMCOUNT_X * STREAMCOUNT_Y
 
 /* Convert 2D index layout to Tnrolled 1D layout
@@ -136,21 +136,23 @@ int main()
     const int ny = 200;             // Height of the area
     const float a = 0.5;            // Diffusion constant
     const float h = 0.005;          // h=dx=dy  grid spacing
-    const int numSteps = 100;    // Number of time steps to simulate (time=numSteps*dt)
+    const int numSteps = 100000;    // Number of time steps to simulate (time=numSteps*dt)
     const int outputEvery = 100000; // How frequently to write output image
 
     const float h2 = h * h;
 
     const float dt = h2 / (4.0 * a); // Largest stable time step
 
+
     int numElements = nx * ny;
-
-    // Streams
-    // STREAMCOUNT;
-    int streamSize = ceil((nx / STREAMCOUNT_X)) * ceil((ny / STREAMCOUNT_X));
+    
+    //Streams
+    //STREAMCOUNT;
+    int streamSize = ceil((nx / STREAMCOUNT_X)) * ceil((ny/ STREAMCOUNT_X)) ;
     int streamSizeX = ceil((nx) / STREAMCOUNT_X);
-    int streamSizeY = ceil((ny) / STREAMCOUNT_Y);
-
+    int streamSizeY = ceil((ny) / STREAMCOUNT_Y); 
+    
+    
     // Allocate two sets of data for current and next timesteps
 
     dim3 threadsPerBlock(BLOCK_SIZE, BLOCK_SIZE);
@@ -173,54 +175,55 @@ int main()
         cudaMalloc((void **)&d_Tn, numElements * sizeof(float));
         cudaMalloc((void **)&d_Tnp1, numElements * sizeof(float));
 
+
         writeTemp(h_Tn, nx, ny, 0);
+
+        //Stream cudaMemcpyAsync + evolve_kernel (1st round)
+        int offset = 0;
+        int offsetX = 0;
+        int offsetY = 0;
+        cudaStream_t* streams = (cudaStream_t*)malloc(STREAMCOUNT_X * STREAMCOUNT_Y * sizeof(cudaStream_t));
+
+        for (int s = 0; s < STREAMCOUNT_X * STREAMCOUNT_Y; s++)
+        {
+            cudaStreamCreate(&streams[s]);
+        }
+
 
         // Timing
         clock_t start = clock();
 
-        // Main loop
 
-        // Stream cudaMemcpyAsync + evolve_kernel (1st round)
-        int offset = 0;
-        int offsetX = 0;
-        int offsetY = 0;
-        cudaStream_t *streams = (cudaStream_t *)malloc(STREAMCOUNT_X * STREAMCOUNT_Y * sizeof(cudaStream_t));
-
-        for (int ystream = 0; ystream < STREAMCOUNT_Y; ystream++)
-        {
+        for(int ystream = 0; ystream < STREAMCOUNT_Y; ystream++){
             offsetY = ystream * streamSizeY;
 
-            for (int xstream = 0; xstream < STREAMCOUNT_X; xstream++)
+            for(int xstream = 0; xstream < STREAMCOUNT_X; xstream++)
             {
                 offsetX = xstream * streamSizeX;
 
                 int streamNr = ystream * STREAMCOUNT_X + xstream;
 
-                for (int cy = 0; cy < streamSizeY + 2; cy++)
-                {
+                for (int cy = 0; cy<streamSizeY+2; cy++){
                     offset = offsetY * nx + offsetX;
 
-                    // printf("creating stream: ", streamNr);
-                    cudaStreamCreate(&streams[streamNr]);
+                    //printf("creating stream: ", streamNr);
+                    //cudaStreamCreate(&streams[streamNr]);
 
-                    // printf("Copying to gpu streamX: %d \n" + xstream);
-                    cudaMemcpyAsync(&d_Tn[offset], &h_Tn[offset], (streamSizeX) * sizeof(float), cudaMemcpyHostToDevice, streams[i]);
-                    cudaMemcpyAsync(&d_Tnp1[offset], &h_Tnp1[offset], (streamSizeX) * sizeof(float), cudaMemcpyHostToDevice, streams[i]);
+                    //printf("Copying to gpu streamX: %d \n" + xstream);
+                    cudaMemcpyAsync(&d_Tn[offset], &h_Tn[offset], (streamSizeX) * sizeof(float), cudaMemcpyHostToDevice, streams[streamNr]);
+                    cudaMemcpyAsync(&d_Tnp1[offset], &h_Tnp1[offset], (streamSizeX) * sizeof(float), cudaMemcpyHostToDevice, streams[streamNr]);
+
                 }
-                evolve_kernel<<<streamSize / BLOCK_SIZE, threadsPerBlock, 0, streams[i]>>>(offsetX, offsetY, d_Tn, d_Tnp1, nx, ny, a, h2, dt);
-            }
-        }
-        // cudaMemcpy(d_Tn, h_Tn, numElements * sizeof(float), cudaMemcpyHostToDevice);
-        // cudaMemcpy(d_Tnp1, h_Tnp1, numElements * sizeof(float), cudaMemcpyHostToDevice);
-        // Check if any error occurred during execution
-        cudaError_t errorCode = cudaGetLastError();
-        if (errorCode != cudaSuccess)
-        {
-            printf("Cuda error streams %d: %s\n", errorCode, cudaGetErrorString(errorCode));
-            exit(0);
-        }
+                evolve_kernel<<<streamSize/BLOCK_SIZE, threadsPerBlock, 0, streams[i]>>>(offsetX, offsetY, d_Tn, d_Tnp1, nx, ny, a, h2, dt);
 
-        for (int n = 1; n <= numSteps; n++) // Streams 0 ->> 1
+            }
+
+        }
+        //cudaMemcpy(d_Tn, h_Tn, numElements * sizeof(float), cudaMemcpyHostToDevice);
+        //cudaMemcpy(d_Tnp1, h_Tnp1, numElements * sizeof(float), cudaMemcpyHostToDevice);
+        
+        // Main loop
+        for (int n = 1; n <= numSteps; n++) //Streams 0 ->> 1
         {
 
             evolve_kernel<<<numBlocks, threadsPerBlock>>>(0, 0, d_Tn, d_Tnp1, nx, ny, a, h2, dt);
@@ -264,9 +267,17 @@ int main()
 
         cudaFree(d_Tn);
         cudaFree(d_Tnp1);
+
+        for (int s = 0; s < STREAMCOUNT_X * STREAMCOUNT_Y; ++s)
+        {
+            cudaStreamDestroy(streams[s]);
+        }
+
     }
 
     printf("Average time: %f\n", totalTime / (double)NUM_ITERATIONS);
 
     return 0;
 }
+
+
