@@ -77,3 +77,25 @@ Iteration 7 took 3.380794 seconds
 Iteration 8 took 3.372186 seconds
 Iteration 9 took 3.385944 seconds
 Average time: 3.372207
+
+----------------------------------------------------------------
+Correções, apenas uma stream
+
+
+Cuda error 1 in iteration 1001: invalid argument
+Cuda error 1 in iteration 999: invalid argument
+Cuda error 1 in iteration dentro do if 999: invalid argument
+Cuda error 1 in iteration dentro do if 999: invalid argument
+Cuda error 1 in iteration dentro do if depois memo 999: invalid argument
+Cuda error 1 in iteration dentro do if depois memo 999: invalid argument
+Iteration 0 took 4.792444 seconds
+Iteration 1 took 4.896435 seconds
+Iteration 2 took 4.914015 seconds
+Iteration 3 took 4.919264 seconds
+Iteration 4 took 4.933322 seconds
+Iteration 5 took 4.925769 seconds
+Iteration 6 took 4.886188 seconds
+Iteration 7 took 4.938253 seconds
+Iteration 8 took 4.884052 seconds
+Iteration 9 took 4.859501 seconds
+Average time: 4.894924

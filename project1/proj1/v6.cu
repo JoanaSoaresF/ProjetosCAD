@@ -16,7 +16,6 @@
 
 #define NUM_ITERATIONS 10
 #define BLOCK_SIZE 16
-#define STREAM_SIZE 2000
 
 /* Convert 2D index layout to unrolled 1D layout
  *
@@ -137,12 +136,17 @@ int main()
         writeTemp(h_Tn, nx, ny, 0);
 
         //    Create streams
-        int nStreams = (nx * ny) / STREAM_SIZE;
-        cudaStream_t stream[nStreams];
-        for (int s = 0; s < nStreams; s++)
-        {
-            cudaStreamCreate(&stream[s]);
-        }
+        cudaStream_t stream;
+        cudaStreamCreate(&stream);
+
+        cudaStream_t streamKernel;
+        cudaStreamCreate(&streamKernel);
+
+        cudaEvent_t event;
+        cudaEventCreate(&event);
+
+        cudaEvent_t eventKernel;
+        cudaEventCreate(&eventKernel);
 
         // Timing
         clock_t start = clock();
@@ -151,6 +155,7 @@ int main()
 
         for (int n = 0; n <= numSteps; n++)
         {
+
             
             evolve_kernel<<<numBlocks, threadsPerBlock>>>(d_Tn, d_Tnp1, nx, ny, a, h2, dt);
             // cudaDeviceSynchronize();
@@ -159,21 +164,38 @@ int main()
             cudaError_t errorCode = cudaGetLastError();
             if (errorCode != cudaSuccess)
             {
-                printf("Cuda error %d: %s\n", errorCode, cudaGetErrorString(errorCode));
+                printf("Cuda error %d in iteration %d: %s\n", errorCode, n, cudaGetErrorString(errorCode));
                 exit(0);
             }
 
             // Write the output if needed
             if ((n + 1) % outputEvery == 0 && n != 0)
             {
+                cudaError_t error = cudaMemcpyAsync(h_Tn, d_Tn, numElements * sizeof(float), 
+                cudaMemcpyDeviceToHost, stream);
 
-                for (int s = 0; s < nStreams; s++)
+                if (error != cudaSuccess)
                 {
-                    int offset = s * STREAM_SIZE;
-                    cudaMemcpyAsync(&h_Tn[offset], &d_Tn[offset], STREAM_SIZE * sizeof(float), cudaMemcpyDeviceToHost);
+                    printf("Cuda error %d in iteration dentro do if depois memo %d: %s\n", error, n, cudaGetErrorString(error));
+                    exit(0);
+                }
+                cudaEventRecord(event, stream);
+                errorCode = cudaGetLastError();
+                if (errorCode != cudaSuccess)
+                {
+                    printf("Cuda error %d in iteration dentro do ifdepois do event %d: %s\n", errorCode, n, cudaGetErrorString(errorCode));
+                    exit(0);
                 }
 
+                // TODO Temos que garantir que temos h_Tn antes de escrever
+                evolve_kernel<<<numBlocks, threadsPerBlock, 0, streamKernel>>>(d_Tn, d_Tnp1, nx, ny, a, h2, dt);
+                cudaEventRecord(eventKernel, streamKernel);
+
+                n++;
+
+                cudaStreamWaitEvent(stream, event);
                 writeTemp(h_Tn, nx, ny, n + 1);
+                cudaStreamWaitEvent(streamKernel, eventKernel);
             }
 
             // Swapping the pointers for the next timestep
@@ -195,10 +217,7 @@ int main()
         cudaFree(d_Tn);
         cudaFree(d_Tnp1);
 
-        for (int i = 0; i < nStreams; ++i)
-        {
-            cudaStreamDestroy(stream[i]);
-        }
+        cudaStreamDestroy(stream);
     }
 
     printf("Average time: %f\n", totalTime / (double)NUM_ITERATIONS);

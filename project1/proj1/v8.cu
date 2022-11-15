@@ -65,10 +65,10 @@ void writeTemp(float *T, int h, int w, int n)
 {
     char filename[64];
 #ifdef PNG
-    sprintf(filename, "../images/v7/heat_%06d.pgm", n);
+    sprintf(filename, "../images/v8/heat_%06d.pgm", n);
     save_png(T, h, w, filename, 'c');
 #else
-    sprintf(filename, "../images/v7/heat_%06d.pgm", n);
+    sprintf(filename, "../images/v8/heat_%06d.pgm", n);
     FILE *f = fopen(filename, "w");
     write_pgm(f, T, w, h, 100);
     fclose(f);
@@ -140,8 +140,8 @@ int main()
 
         //    Create streams
         int nStreams = STREAMCOUNT_X * STREAMCOUNT_Y;
-        cudaStream_t stream[nStreams];
-        cudaStream_t streamRecive[nStreams];
+        cudaStream_t *stream = (cudaStream_t *)malloc(nStreams * sizeof(cudaStream_t));
+        // cudaStream_t streamRecive[nStreams];
 
         for (int s = 0; s < nStreams; s++)
         {
@@ -177,10 +177,10 @@ int main()
                         cudaMemcpyAsync(&d_Tn[offset], &h_Tn[offset], (streamSizeX) * sizeof(float), cudaMemcpyHostToDevice, stream[streamNr]);
                         cudaMemcpyAsync(&d_Tnp1[offset], &h_Tnp1[offset], (streamSizeX) * sizeof(float), cudaMemcpyHostToDevice, stream[streamNr]);
                     }
-                    evolve_kernel<<<streamSize / BLOCK_SIZE, threadsPerBlock, 0, stream[i]>>>(offsetX, offsetY, d_Tn, d_Tnp1, nx, ny, a, h2, dt);
+                    evolve_kernel<<<streamSize / BLOCK_SIZE, threadsPerBlock, 0, stream[streamNr]>>>(offsetX, offsetY, d_Tn, d_Tnp1, nx, ny, a, h2, dt);
                 }
             }
-            cudaDeviceSynchronize();
+            // cudaDeviceSynchronize();
 
             cudaMemcpy(h_Tn, d_Tn, numElements * sizeof(float), cudaMemcpyDeviceToHost);
             cudaMemcpy(h_Tnp1, d_Tnp1, numElements * sizeof(float), cudaMemcpyDeviceToHost);
