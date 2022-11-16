@@ -18,6 +18,7 @@
 #define NUM_ITERATIONS 1
 #define STREAMCOUNT_X 4
 #define STREAMCOUNT_Y 4
+#define VERSION "V7 - Streams with comunnication every step - separated loops"
 
 /* Convert 2D index layout to unrolled 1D layout
  *
@@ -98,10 +99,10 @@ __global__ void evolve_kernel(int offsetX, int offsetY, const float *Tn, float *
 
 int main()
 {
-    const int nx = 200;             // Width of the area
-    const int ny = 200;             // Height of the area
-    const float a = 0.5;            // Diffusion constant
-    const float h = 0.005;          // h=dx=dy  grid spacing
+    const int nx = 200;            // Width of the area
+    const int ny = 200;            // Height of the area
+    const float a = 0.5;           // Diffusion constant
+    const float h = 0.005;         // h=dx=dy  grid spacing
     const int numSteps = 10000;    // Number of time steps to simulate (time=numSteps*dt)
     const int outputEvery = 10000; // How frequently to write output image
 
@@ -113,6 +114,22 @@ int main()
     // Allocate two sets of data for current and next timesteps
     dim3 threadsPerBlock(BLOCK_SIZE, BLOCK_SIZE);
     dim3 numBlocks(nx / threadsPerBlock.x + 1, ny / threadsPerBlock.y + 1);
+
+    printf("--------------------------------------------------------------------------------------------\n");
+    printf("VERSION: %s \n"
+           "GENERAL PROBLEM:\n"
+           "\tGrid: %d x %d\n"
+           "\tGrid spacing(h): %f\n"
+           "\tDiffusion constant: %f\n"
+           "\tNumber of steps: %d\n "
+           "\tOutput: %d steps\n"
+           "CUDA PARAMETERS:\n"
+           "\tThreads Per Block: %d x %d\n"
+           "\tBlocks: %d x %d \n\n"
+           "STREAMS:\n"
+           "\tNumber of streams: %d x %d\n"
+           "\tStream Size: %d\n\n",
+           VERSION, nx, ny, h, a, numSteps, outputEvery, threadsPerBlock.x, threadsPerBlock.y, numBlocks, STREAMCOUNT_X, STREAMCOUNT_Y, 0);
 
     double totalTime = 0;
     for (int i = 0; i < NUM_ITERATIONS; i++)
@@ -260,7 +277,8 @@ int main()
         }
     }
 
-    printf("Average time: %f\n", totalTime / (double)NUM_ITERATIONS);
+    printf("\nAverage time: %f\n\n", totalTime / (double)NUM_ITERATIONS);
+    printf("--------------------------------------------------------------------------------------------\n");
 
     return 0;
 }

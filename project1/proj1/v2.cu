@@ -14,8 +14,9 @@
 #include "pngwriter.h"
 #endif
 
-#define NUM_ITERATIONS 10
+#define NUM_ITERATIONS 1
 #define BLOCK_SIZE 16
+#define VERSION "V2 - CUDA with less communication"
 
 /* Convert 2D index layout to unrolled 1D layout
  *
@@ -96,12 +97,12 @@ __global__ void evolve_kernel(const float *Tn, float *Tnp1, const int nx, const 
 
 int main()
 {
-    const int nx = 200;             // Width of the area
-    const int ny = 200;             // Height of the area
-    const float a = 0.5;            // Diffusion constant
-    const float h = 0.005;          // h=dx=dy  grid spacing
-    const int numSteps = 100000;     // Number of time steps to simulate (time=numSteps*dt)
-    const int outputEvery = 100000;  // How frequently to write output image
+    const int nx = 200;          // Width of the area
+    const int ny = 200;          // Height of the area
+    const float a = 0.5;         // Diffusion constant
+    const float h = 0.005;       // h=dx=dy  grid spacing
+    const int numSteps = 100000; // Number of time steps to simulate (time=numSteps*dt)
+    const int outputEvery = 100; // How frequently to write output image
 
     const float h2 = h * h;
 
@@ -110,8 +111,21 @@ int main()
     int numElements = nx * ny;
     // Allocate two sets of data for current and next timesteps
 
-    dim3 threadsPerBlock(BLOCK_SIZE	, BLOCK_SIZE);
+    dim3 threadsPerBlock(BLOCK_SIZE, BLOCK_SIZE);
     dim3 numBlocks(nx / threadsPerBlock.x + 1, ny / threadsPerBlock.y + 1);
+
+    printf("--------------------------------------------------------------------------------------------\n");
+    printf("VERSION: %s \n"
+           "GENERAL PROBLEM:\n"
+           "\tGrid: %d x %d\n"
+           "\tGrid spacing(h): %f\n"
+           "\tDiffusion constant: %f\n"
+           "\tNumber of steps: %d\n "
+           "\tOutput: %d steps\n"
+           "CUDA PARAMETERS:\n"
+           "\tThreads Per Block: %d x %d\n"
+           "\tBlocks: %d x %d \n\n",
+           VERSION, nx, ny, h, a, numSteps, outputEvery, threadsPerBlock.x, threadsPerBlock.y, numBlocks.x, numBlocks.y);
 
     double totalTime = 0;
     for (int i = 0; i < NUM_ITERATIONS; i++)
@@ -180,7 +194,8 @@ int main()
         cudaFree(d_Tnp1);
     }
 
-    printf("Average time: %f\n", totalTime / (double)NUM_ITERATIONS);
+    printf("\nAverage time: %f\n\n", totalTime / (double)NUM_ITERATIONS);
+    printf("--------------------------------------------------------------------------------------------\n");
 
     return 0;
 }

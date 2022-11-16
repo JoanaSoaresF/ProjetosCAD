@@ -17,6 +17,7 @@
 #define BLOCK_SIZE_X 16
 #define BLOCK_SIZE_Y 16
 #define NUM_ITERATIONS 1
+#define VERSION "V1 - CUDA with memory transfer every step"
 
 /* Convert 2D index layout to unrolled 1D layout
  *
@@ -110,8 +111,21 @@ int main()
 
     int numElements = nx * ny;
     // Allocate two sets of data for current and next timesteps
-    dim3 threadsPerBlock(16, 16);
+    dim3 threadsPerBlock(BLOCK_SIZE_X, BLOCK_SIZE_Y);
     dim3 numBlocks(nx / threadsPerBlock.x + 1, ny / threadsPerBlock.y + 1);
+
+    printf("--------------------------------------------------------------------------------------------\n");
+    printf("VERSION: %s \n"
+           "GENERAL PROBLEM:\n"
+           "\tGrid: %d x %d\n"
+           "\tGrid spacing(h): %d\n"
+           "\tDiffusion constant: %a\n"
+           "\tNumber of steps:%d\n"
+           "\tOutput: %d steps\n"
+           "CUDA PARAMETERS:\n"
+           "\tThreads Per Block: %d x %d\n"
+           "\tBlocks: %d x %d \n",
+           VERSION, nx, ny, h, a, numSteps, outputEvery, threadsPerBlock.x, threadsPerBlock.y, numBlocks.x, numBlocks.y);
 
     double totalTime = 0;
     for (int i = 0; i < NUM_ITERATIONS; i++)
@@ -179,7 +193,8 @@ int main()
         cudaFree(d_Tnp1);
     }
 
-    printf("Average time: %f\n", totalTime / (double)NUM_ITERATIONS);
+    printf("\nAverage time: %f\n\n", totalTime / (double)NUM_ITERATIONS);
+    printf("--------------------------------------------------------------------------------------------\n");
 
     return 0;
 }

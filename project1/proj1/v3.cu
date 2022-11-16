@@ -16,6 +16,7 @@
 
 #define NUM_ITERATIONS 10
 #define BLOCK_SIZE 16
+#define VERSION "V3 - shared memory"
 
 /* Convert 2D index layout to Tnrolled 1D layout
  *
@@ -146,6 +147,19 @@ int main()
     dim3 threadsPerBlock(BLOCK_SIZE, BLOCK_SIZE);
     dim3 numBlocks(nx / threadsPerBlock.x + 1, ny / threadsPerBlock.y + 1);
 
+    printf("--------------------------------------------------------------------------------------------\n");
+    printf("VERSION: %s \n"
+           "GENERAL PROBLEM:\n"
+           "\tGrid: %d x %d\n"
+           "\tGrid spacing(h): %f\n"
+           "\tDiffusion constant: %f\n"
+           "\tNumber of steps: %d\n "
+           "\tOutput: %d steps\n"
+           "CUDA PARAMETERS:\n"
+           "\tThreads Per Block: %d x %d\n"
+           "\tBlocks: %d x %d \n\n",
+           VERSION, nx, ny, h, a, numSteps, outputEvery, threadsPerBlock.x, threadsPerBlock.y, numBlocks.x, numBlocks.y);
+
     double totalTime = 0;
     for (int i = 0; i < NUM_ITERATIONS; i++)
     {
@@ -190,11 +204,6 @@ int main()
             {
                 cudaMemcpy(h_Tn, d_Tn, numElements * sizeof(float), cudaMemcpyDeviceToHost);
                 cudaMemcpy(h_Tnp1, d_Tnp1, numElements * sizeof(float), cudaMemcpyDeviceToHost);
-                if (errorCode != cudaSuccess)
-                {
-                    printf("Cuda error %d: %s\n", errorCode, cudaGetErrorString(errorCode));
-                    exit(0);
-                }
                 writeTemp(h_Tnp1, nx, ny, n + 1);
             }
 
@@ -218,7 +227,8 @@ int main()
         cudaFree(d_Tnp1);
     }
 
-    printf("Average time: %f\n", totalTime / (double)NUM_ITERATIONS);
+    printf("\nAverage time: %f\n\n", totalTime / (double)NUM_ITERATIONS);
+    printf("--------------------------------------------------------------------------------------------\n");
 
     return 0;
 }

@@ -18,6 +18,7 @@
 #define NUM_ITERATIONS 1
 #define STREAMCOUNT_X 4
 #define STREAMCOUNT_Y 4
+#define VERSION "V8 - Streams with comunnication every step - same loop"
 
 /* Convert 2D index layout to unrolled 1D layout
  *
@@ -114,6 +115,22 @@ int main()
     dim3 numBlocks(nx / threadsPerBlock.x + 1, ny / threadsPerBlock.y + 1);
 
     double totalTime = 0;
+    printf("--------------------------------------------------------------------------------------------\n");
+    printf("VERSION: %s \n"
+           "GENERAL PROBLEM:\n"
+           "\tGrid: %d x %d\n"
+           "\tGrid spacing(h): %f\n"
+           "\tDiffusion constant: %f\n"
+           "\tNumber of steps: %d\n "
+           "\tOutput: %d steps\n"
+           "CUDA PARAMETERS:\n"
+           "\tThreads Per Block: %d x %d\n"
+           "\tBlocks: %d x %d \n\n"
+           "STREAMS:\n"
+           "\tNumber of streams: %d x %d\n"
+           "\tStream Size: %d\n\n",
+           VERSION, nx, ny, h, a, numSteps, outputEvery, threadsPerBlock.x, threadsPerBlock.y, numBlocks, STREAMCOUNT_X, STREAMCOUNT_Y, 0);
+
     for (int i = 0; i < NUM_ITERATIONS; i++)
     {
         float *h_Tn = (float *)calloc(numElements, sizeof(float));
@@ -222,7 +239,8 @@ int main()
         }
     }
 
-    printf("Average time: %f\n", totalTime / (double)NUM_ITERATIONS);
+    printf("\nAverage time: %f\n\n", totalTime / (double)NUM_ITERATIONS);
+    printf("--------------------------------------------------------------------------------------------\n");
 
     return 0;
 }
