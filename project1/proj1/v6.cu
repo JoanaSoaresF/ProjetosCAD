@@ -127,9 +127,9 @@ int main()
            "\tThreads Per Block: %d x %d\n"
            "\tBlocks: %d x %d \n\n"
            "STREAMS:\n"
-           "\tNumber of streams: %d x %d\n"
+           "\tNumber of streams: %d\n"
            "\tStream Size: %d\n\n",
-           VERSION, nx, ny, h, a, numSteps, outputEvery, threadsPerBlock.x, threadsPerBlock.y, numBlocks, 1, numElements);
+           VERSION, nx, ny, h, a, numSteps, outputEvery, threadsPerBlock.x, threadsPerBlock.y, numBlocks.x, numBlocks.y, 1, numElements);
 
     double totalTime = 0;
     for (int i = 0; i < NUM_ITERATIONS; i++)
@@ -189,15 +189,22 @@ int main()
             {
                 cudaMemcpyAsync(h_Tn, d_Tn, numElements * sizeof(float),
                                 cudaMemcpyDeviceToHost, stream);
-
                 cudaEventRecord(event, stream);
 
+                // Swapping the pointers for the next timestep
+                float *t = d_Tn;
+                d_Tn = d_Tnp1;
+                d_Tnp1 = t;
+
+                // Launch kernel to execute simultaneously with communication
                 evolve_kernel<<<numBlocks, threadsPerBlock, 0, streamKernel>>>(d_Tn, d_Tnp1, nx, ny, a, h2, dt);
                 cudaEventRecord(eventKernel, streamKernel);
                 n++;
 
+                // Wait that the copy is over to write the result
                 cudaStreamWaitEvent(stream, event);
                 writeTemp(h_Tn, nx, ny, n);
+                // wait for the kernel to end to resume
                 cudaStreamWaitEvent(streamKernel, eventKernel);
             }
 

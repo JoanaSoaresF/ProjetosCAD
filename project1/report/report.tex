@@ -2,6 +2,7 @@
 
 \usepackage{listings}
 \usepackage{pgfplots}
+\pgfplotsset{compat=1.6}
 \usepackage{hyperref}
 \usepackage{caption}
 \usepackage{subcaption}
@@ -44,7 +45,7 @@ Knowing that the architecture of the system influences the performance obtained,
 
 \section{Results}
 To accurately compare the different versions all the tests were performed in the university cluster and averaged the execution times over ten execution. The parameters chosen were:
-\lstinputlisting[language=C,style=c, firstline=71, lastline=76]{../proj1/main.c}
+\lstinputlisting[language=C,style=c, firstline=75, lastline=80]{../proj1/main.c}
 
 
 \subsection{Sequential Verion}
@@ -112,7 +113,7 @@ In this version, we take advantage of the shared memory between threads of the s
 
 This version had an average execution time of 2.199574 seconds, which doesn't show any improvement from the previous version. This may be because of the overhead introduced by copying each element and the threads' synchronization is not balanced by faster access to the shared memory.
 
-\subsection{V4 Version - Streams}
+\subsection{V4 Version - Streams with shared memory}
 After analyzing our version with shared memory we focused decided to add streams to this version despite not expecting any big improvement when working with a small grid.
 
 Our implementation adds streams that allow the device to run as soon as the first partition of our table is downloaded. Since our function works with smaller squares we have a two-dimension cycle in order to copy the necessary data.
@@ -122,11 +123,90 @@ We were already expecting the results we got, an average execution time of 2.230
 
 
 
+\subsection{V6 Version - Streams to copy output}
 % V6 comment
 % TODO Avabar V6
-We expect streams to prove advantageous when we have a larger amount of data to transfer between the host and the device. To prove this hypothesis we increase the grid size to 2000x2000 and compare the different versions, showing the results in
 
-Another situation in that streams may be helpful is we want the output in intermediate steps, allowing the communication to overlap with the computation of the next step. So, once again, we rerun the different version with \texttt{outputEvery = 1000} to compare the execution time. The results can be seen in 
+
+We expect streams to prove advantageous when we want the output in intermediate steps, allowing the communication to overlap with the computation of the next step. To perform this analysis we compare the V2 and V6 versions, varying the parameter \texttt{outputEvery} to values of 1000, 100, 10, and 1.
+
+For larger values of \texttt{outputEvery}, we cannot see significant differences revealing that the costs required for synchronization are not balanced by the overlap of communication with synchronization. But with lower values, we have begun to see the advantages in the use of streams. We can see the results in \autoref{fig:v2andv6OutputSteps}.
+
+With the results on every step is where we see the better improvement allowed by streams, in the end of every step um can overlap the execution of the next step with the transfer of the previous result and its writing on a host file.
+
+
+\begin{figure}[ht]
+  \centering
+  \begin{tikzpicture}
+    \begin{axis}[
+        ybar,
+        enlargelimits=0.15,
+        legend style={at={(0.5,-0.25)},
+            anchor=north,legend columns=-1},
+        ylabel={Execution time (seconds)},
+        xlabel={Number of steps between output},
+        symbolic x coords={1000, 100, 10, 1},
+        xtick=data,
+        bar width = 17pt,
+        nodes near coords={
+            \pgfmathprintnumber[precision=1]{\pgfplotspointmeta}
+          },
+        % nodes near coords style={font=\tiny},
+      ]
+
+      % V2
+      \addplot
+      coordinates {(1000, 3.596356) (100, 8.412381) (10, 59.388425) (1, 564.774576)};
+      % V6 
+      \addplot
+      coordinates {(1000, 2.658484) (100, 8.265419) (10, 58.153837) (1, 277.208141)};
+
+      \legend{V2,V6}
+    \end{axis}
+  \end{tikzpicture}
+  \caption{Comparing execution time of V2 and V6, varying \texttt{outputEvery}}
+  \label{fig:v2andv6OutputSteps}
+\end{figure}
+
+
+
+Another situation in that streams may be helpful is when we have a larger amount of data to transfer between the host and the device. To prove this hypothesis we vary the grid size and compare the different versions, showing the results in \autoref{fig:v2andv6Grid}.
+
+As we can see the use of streams does not appear to improve the performance when using larger data sets.
+
+
+\begin{figure}[ht]
+  \centering
+  \begin{tikzpicture}
+    \begin{axis}[
+        ybar,
+        enlargelimits=0.15,
+        legend style={at={(0.5,-0.25)},
+            anchor=north,legend columns=-1},
+        ylabel={Execution time (seconds)},
+        xlabel={Number of steps between output},
+        symbolic x coords={200x200, 400x400, 800x800, 2000x2000},
+        xtick=data,
+        bar width = 17pt,
+        nodes near coords={
+            \pgfmathprintnumber[precision=1]{\pgfplotspointmeta}
+          },
+        % nodes near coords style={font=\tiny},
+      ]
+
+      % V2
+      \addplot
+      coordinates {(200x200, 3.596356) (400x400, 9.045749) (800x800, 37.804506) (2000x2000, 247.119578)};
+      % V6 
+      \addplot
+      coordinates {(200x200, 2.658484) (400x400, 9.047637) (800x800, 37.634587) (2000x2000, 243.798113)};
+
+      \legend{V2,V6}
+    \end{axis}
+  \end{tikzpicture}
+  \caption{Comparing execution time of V2 and V6, varying the input size}
+  \label{fig:v2andv6Grid}
+\end{figure}
 
 \section{Results}
 
@@ -160,13 +240,13 @@ Another situation in that streams may be helpful is we want the output in interm
         \begin{axis}[
             ylabel={Execution time (seconds)},
             xlabel={Version},
-symbolic x coords={V2, V3, V4},
+            symbolic x coords={V2, V3, V4},
             xtick=data
           ]
           \addplot[ybar,fill=blue] coordinates {
               (V2,   2.106914)
               (V3,  2.199574 )
-(V4, 2.230349)
+              (V4, 2.230349)
             };
         \end{axis}
       \end{tikzpicture}

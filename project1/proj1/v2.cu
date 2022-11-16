@@ -14,7 +14,7 @@
 #include "pngwriter.h"
 #endif
 
-#define NUM_ITERATIONS 1
+#define NUM_ITERATIONS 2
 #define BLOCK_SIZE 16
 #define VERSION "V2 - CUDA with less communication"
 
@@ -102,7 +102,7 @@ int main()
     const float a = 0.5;         // Diffusion constant
     const float h = 0.005;       // h=dx=dy  grid spacing
     const int numSteps = 100000; // Number of time steps to simulate (time=numSteps*dt)
-    const int outputEvery = 100; // How frequently to write output image
+    const int outputEvery = 1000; // How frequently to write output image
 
     const float h2 = h * h;
 
