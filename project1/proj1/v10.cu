@@ -16,7 +16,7 @@
 
 #define NUM_ITERATIONS 10
 #define BLOCK_SIZE 16
-#define VERSION "V9 - CUDA with shared multitask thread"
+#define VERSION "V10 - CUDA with shared memmory and multitask thread"
 
 /* Convert 2D index layout to unrolled 1D layout
  *
@@ -64,10 +64,10 @@ void writeTemp(float *T, int h, int w, int n)
 {
     char filename[64];
 #ifdef PNG
-    sprintf(filename, "../images/v9/heat_%06d.pgm", n);
+    sprintf(filename, "../images/v10/heat_%06d.pgm", n);
     save_png(T, h, w, filename, 'c');
 #else
-    sprintf(filename, "../images/v9/heat_%06d.pgm", n);
+    sprintf(filename, "../images/v10/heat_%06d.pgm", n);
     FILE *f = fopen(filename, "w");
     write_pgm(f, T, w, h, 100);
     fclose(f);
@@ -76,7 +76,41 @@ void writeTemp(float *T, int h, int w, int n)
 
 __global__ void evolve_kernel(const float *Tn, float *Tnp1, const int nx, const int ny, const float a, const float h2, const float dt, const int nelem)
 {
+    __shared__ float s_Tn[(BLOCK_SIZE + 2) * (BLOCK_SIZE + 2)];
     int i = threadIdx.x + blockIdx.x * blockDim.x;
+    int j = threadIdx.y + blockIdx.y * blockDim.y;
+
+    int s_i = threadIdx.x + 1;
+    int s_j = threadIdx.y + 1;
+    int s_ny = BLOCK_SIZE + 2;
+
+    // Load data into shared memory
+    // Central square
+    s_Tn[getIndex(s_i, s_j, s_ny)] = Tn[getIndex(i, j, ny)];
+    // Top border
+    if (s_j == 1 && i != 0 && i < ny)
+    {
+        s_Tn[getIndex(s_i, 0, s_ny)] = Tn[getIndex(i, blockIdx.y * blockDim.y - 1, ny)];
+    }
+    // Bottom border
+    if (s_j == BLOCK_SIZE && i != 0 && i < ny)
+    {
+        s_Tn[getIndex(s_i, BLOCK_SIZE + 1, s_ny)] = Tn[getIndex(i, (blockIdx.y + 1) * blockDim.y, ny)];
+    }
+    // Left border
+    if (s_i == 1 && j != 0 && j < ny)
+    {
+        s_Tn[getIndex(0, s_j, s_ny)] = Tn[getIndex(blockIdx.x * blockDim.x - 1, j, ny)];
+    }
+    // Right border
+    if (s_i == BLOCK_SIZE && j != 0 && j < ny)
+    {
+        s_Tn[getIndex(BLOCK_SIZE + 1, s_j, s_ny)] = Tn[getIndex((blockIdx.x + 1) * blockDim.x, j, ny)];
+    }
+
+    // Make sure all the data is loaded before computing
+    __syncthreads();
+    
     if (i > 0 && i < nx - 1)
     {
         int j = threadIdx.y + blockIdx.y * blockDim.y;
@@ -92,42 +126,6 @@ __global__ void evolve_kernel(const float *Tn, float *Tnp1, const int nx, const 
 
                 Tnp1[index] = tij + a * dt * ((tim1j + tip1j + tijm1 + tijp1 - 4.0 * tij) / h2);
             }
-            // float *up = (float *)malloc((nelem+2) * sizeof(float));
-            // float *sol = (float *)malloc((nelem+2) * sizeof(float));
-            // float *down = (float *)malloc((nelem+2) * sizeof(float));
-
-            // up[0] = Tn[getIndex(i-1, j+1, ny)];
-            // up[1] = Tn[getIndex(i, j+1, ny)];
-            // sol[0] = Tn[getIndex(i-1, j, ny)];
-            // sol[1] = Tn[getIndex(i, j, ny)];
-            // down[0] = Tn[getIndex(i-1, j-1, ny)];
-            // down[1] = Tn[getIndex(i, j-1, ny)];
-
-            // int index;
-            // for(int n = 1; n<=nelem; n++) {
-                
-            //     up[n] = Tn[getIndex(i+n, j+1, ny)];
-            //     sol[n] = Tn[getIndex(i+n, j, ny)];
-            //     down[n] = Tn[getIndex(i+n, j-1, ny)];
-
-            //     float tij = sol[n];
-            //     float tim1j = sol[n-1];
-            //     float tijm1 = down[n];
-            //     float tip1j = sol[n+1];
-            //     float tijp1 = up[n];
-
-            //     index = getIndex(i+n-1, j, ny);
-            //     Tnp1[index] = tij + a * dt * ((tim1j + tip1j + tijm1 + tijp1 - 4.0 * tij) / h2);
-            // }
-            // const int index = getIndex(i, j, ny);
-            // float tij = Tn[index];
-            // float tim1j = Tn[getIndex(i - 1, j, ny)];
-            // float tijm1 = Tn[getIndex(i, j - 1, ny)];
-            // float tip1j = Tn[getIndex(i + 1, j, ny)];
-            // float tijp1 = Tn[getIndex(i, j + 1, ny)];
-
-            // Explicit scheme
-            //Tnp1[index] = tij + a * dt * ((tim1j + tip1j + tijm1 + tijp1 - 4.0 * tij) / h2);
         }
     }
 }
@@ -148,12 +146,10 @@ int main()
     int numElements = nx * ny;
     // Allocate two sets of data for current and next timesteps
 
-    //QUESTION ???
-    int threadSize = nx;
-    dim3 threadsPerBlock(1, BLOCK_SIZE	* BLOCK_SIZE);
+    //QUESTION ??? Change size
+    int threadSize = nx / 20;
+    dim3 threadsPerBlock(nx / threadSize, BLOCK_SIZE * BLOCK_SIZE / (nx / threadSize));
     dim3 numBlocks(nx / threadsPerBlock.x + 1, ny / threadsPerBlock.y + 1);
-    //dim3 threadsPerBlock(BLOCK_SIZE	, BLOCK_SIZE);
-    //dim3 numBlocks(nx / threadsPerBlock.x + 1, ny / threadsPerBlock.y + 1);
 
     printf("--------------------------------------------------------------------------------------------\n");
     printf("VERSION: %s \n"
@@ -167,7 +163,6 @@ int main()
            "\tThreads Per Block: %d x %d\n"
            "\tBlocks: %d x %d \n\n",
            VERSION, nx, ny, h, a, numSteps, outputEvery, threadsPerBlock.x, threadsPerBlock.y, numBlocks.x, numBlocks.y);
-
 
     double totalTime = 0;
     for (int i = 0; i < NUM_ITERATIONS; i++)
