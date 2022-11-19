@@ -14,7 +14,7 @@
 #include "pngwriter.h"
 #endif
 
-#define NUM_ITERATIONS 2
+#define NUM_ITERATIONS 10
 #define BLOCK_SIZE 16
 #define VERSION "V2 - CUDA with less communication"
 
@@ -95,13 +95,18 @@ __global__ void evolve_kernel(const float *Tn, float *Tnp1, const int nx, const 
     }
 }
 
+double timedif(struct timespec *t, struct timespec *t0)
+{
+    return (t->tv_sec - t0->tv_sec) + 1.0e-9 * (double)(t->tv_nsec - t0->tv_nsec);
+}
+
 int main()
 {
-    const int nx = 200;          // Width of the area
-    const int ny = 200;          // Height of the area
-    const float a = 0.5;         // Diffusion constant
-    const float h = 0.005;       // h=dx=dy  grid spacing
-    const int numSteps = 100000; // Number of time steps to simulate (time=numSteps*dt)
+    const int nx = 200;           // Width of the area
+    const int ny = 200;           // Height of the area
+    const float a = 0.5;          // Diffusion constant
+    const float h = 0.005;        // h=dx=dy  grid spacing
+    const int numSteps = 100000;  // Number of time steps to simulate (time=numSteps*dt)
     const int outputEvery = 1000; // How frequently to write output image
 
     const float h2 = h * h;
@@ -149,7 +154,9 @@ int main()
         writeTemp(h_Tn, nx, ny, 0);
 
         // Timing
-        clock_t start = clock();
+        // clock_t start = clock();
+        struct timespec start, finish;
+        clock_gettime(CLOCK_MONOTONIC, &start);
 
         // Main loop
 
@@ -181,8 +188,10 @@ int main()
         }
 
         // Timing
-        clock_t finish = clock();
-        double time = (double)(finish - start) / CLOCKS_PER_SEC;
+        // clock_t finish = clock();
+        // double time = (double)(finish - start) / CLOCKS_PER_SEC;
+        clock_gettime(CLOCK_MONOTONIC, &finish);
+        double time = timedif(&finish, &start);
         totalTime += time;
         printf("Iteration %d took %f seconds\n", i, time);
 

@@ -70,6 +70,11 @@ void writeTemp(float *T, int h, int w, int n)
 #endif
 }
 
+double timedif(struct timespec *t, struct timespec *t0)
+{
+    return (t->tv_sec - t0->tv_sec) + 1.0e-9 * (double)(t->tv_nsec - t0->tv_nsec);
+}
+
 int main()
 {
     const int nx = 200;             // Width of the area

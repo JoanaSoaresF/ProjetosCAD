@@ -1,134 +1,150 @@
-dim3 threadsPerBlock(1, 1);
-dim3 numBlocks(nx/threadsPerBlock.x, ny/threadsPerBlock.y);
+--------------------------------------------------------------------------------------------
+VERSION: V1 - CUDA with memory transfer every step 
+GENERAL PROBLEM:
+	Grid: 200 x 200
+	Grid spacing(h): 0.005
+	Diffusion constant:  0.5
+	Number of steps:100000
+	Output: 100000 steps
+CUDA PARAMETERS:
+	Threads Per Block: 16 x 16
+	Blocks:  13 x 13 
+Iteration 0 took 35.478622 seconds
+Iteration 1 took 36.336777 seconds
+Iteration 2 took 36.353135 seconds
+Iteration 3 took 36.333049 seconds
+Iteration 4 took 36.352316 seconds
+Iteration 5 took 36.151177 seconds
+Iteration 6 took 36.156171 seconds
+Iteration 7 took 36.647650 seconds
+Iteration 8 took 36.648151 seconds
+Iteration 9 took 36.497300 seconds
 
-Iteration 0 took 83.954273 seconds
-Iteration 1 took 84.524154 seconds
-Iteration 2 took 84.820328 seconds
-Iteration 3 took 84.468386 seconds
-Iteration 4 took 84.498407 seconds
-Iteration 5 took 84.493757 seconds
-Iteration 6 took 84.467621 seconds
-Iteration 7 took 84.459340 seconds
-Iteration 8 took 84.476318 seconds
-Iteration 9 took 84.469830 seconds
-Average time: 84.463241
+Average time: 36.295435
 
-----------------------------------------------------------
-dim3 threadsPerBlock(16, 16);
-dim3 numBlocks((nx + threadsPerBlock.x - 1) / threadsPerBlock.x, (ny + threadsPerBlock.y - 1) / threadsPerBlock.y);
+--------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------
+VERSION: V1 - CUDA with memory transfer every step 
+GENERAL PROBLEM:
+	Grid: 200 x 200
+	Grid spacing(h): 0.005000
+	Diffusion constant: 0.500000
+	Number of steps: 100000
+	Output: 100000 steps
+CUDA PARAMETERS:
+	Threads Per Block: 1 x 1
+	Blocks: 201 x 201 
+Iteration 0 took 83.879717 seconds
+Iteration 1 took 85.615785 seconds
+Iteration 2 took 85.566395 seconds
+Iteration 3 took 85.561082 seconds
+Iteration 4 took 85.266359 seconds
+Iteration 5 took 85.287947 seconds
+Iteration 6 took 85.265959 seconds
+Iteration 7 took 85.062382 seconds
+Iteration 8 took 85.062704 seconds
+Iteration 9 took 85.371532 seconds
 
-Iteration 0 took 35.475833 seconds
-Iteration 1 took 36.025748 seconds
-Iteration 2 took 35.803831 seconds
-Iteration 3 took 35.804278 seconds
-Iteration 4 took 35.802204 seconds
-Iteration 5 took 35.800559 seconds
-Iteration 6 took 35.804655 seconds
-Iteration 7 took 35.800741 seconds
-Iteration 8 took 35.779207 seconds
-Iteration 9 took 35.754317 seconds
-Average time: 35.785137
+Average time: 85.193986
 
+--------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------
+VERSION: V1 - CUDA with memory transfer every step 
+GENERAL PROBLEM:
+	Grid: 200 x 200
+	Grid spacing(h): 0.005000
+	Diffusion constant: 0.500000
+	Number of steps: 100000
+	Output: 100000 steps
+CUDA PARAMETERS:
+	Threads Per Block: 2 x 2
+	Blocks: 101 x 101 
+Iteration 0 took 46.346184 seconds
+Iteration 1 took 47.650509 seconds
+Iteration 2 took 47.661082 seconds
+Iteration 3 took 47.648313 seconds
+Iteration 4 took 47.643360 seconds
+Iteration 5 took 47.633565 seconds
+Iteration 6 took 47.416850 seconds
+Iteration 7 took 47.624024 seconds
+Iteration 8 took 47.621949 seconds
+Iteration 9 took 47.648645 seconds
 
-----------------------------------------------------------
-dim3 threadsPerBlock(32, 32);
-dim3 numBlocks((nx + threadsPerBlock.x - 1) / threadsPerBlock.x, (ny + threadsPerBlock.y - 1) / threadsPerBlock.y);
+Average time: 47.489448
 
+--------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------
+VERSION: V1 - CUDA with memory transfer every step 
+GENERAL PROBLEM:
+	Grid: 200 x 200
+	Grid spacing(h): 0.005000
+	Diffusion constant: 0.500000
+	Number of steps: 100000
+	Output: 100000 steps
+CUDA PARAMETERS:
+	Threads Per Block: 4 x 4
+	Blocks: 51 x 51 
+Iteration 0 took 36.287996 seconds
+Iteration 1 took 36.984584 seconds
+Iteration 2 took 36.999421 seconds
+Iteration 3 took 37.004885 seconds
+Iteration 4 took 37.164386 seconds
+Iteration 5 took 37.162666 seconds
+Iteration 6 took 37.155611 seconds
+Iteration 7 took 37.177515 seconds
+Iteration 8 took 37.162488 seconds
+Iteration 9 took 37.156228 seconds
 
-Iteration 0 took 36.313975 seconds
-Iteration 1 took 36.589419 seconds
-Iteration 2 took 36.589042 seconds
-Iteration 3 took 36.581222 seconds
-Iteration 4 took 36.380315 seconds
-Iteration 5 took 36.380548 seconds
-Iteration 6 took 36.380189 seconds
-Iteration 7 took 36.378924 seconds
-Iteration 8 took 36.375330 seconds
-Iteration 9 took 36.385284 seconds
-Average time: 36.435425
+Average time: 37.025578
 
-----------------------------------------------------------
-dim3 threadsPerBlock(16, 16);
-dim3 numBlocks(nx/threadsPerBlock.x + 1, ny/threadsPerBlock.y + 1);
+--------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------
+VERSION: V1 - CUDA with memory transfer every step 
+GENERAL PROBLEM:
+	Grid: 200 x 200
+	Grid spacing(h): 0.005000
+	Diffusion constant: 0.500000
+	Number of steps: 100000
+	Output: 100000 steps
+CUDA PARAMETERS:
+	Threads Per Block: 8 x 8
+	Blocks: 26 x 26 
+Iteration 0 took 34.986390 seconds
+Iteration 1 took 36.107228 seconds
+Iteration 2 took 36.091934 seconds
+Iteration 3 took 36.099850 seconds
+Iteration 4 took 36.580245 seconds
+Iteration 5 took 36.578031 seconds
+Iteration 6 took 36.590814 seconds
+Iteration 7 took 36.096874 seconds
+Iteration 8 took 36.095230 seconds
+Iteration 9 took 36.096675 seconds
 
+Average time: 36.132327
 
-Iteration 0 took 35.229691 seconds
-Iteration 1 took 35.757469 seconds
-Iteration 2 took 35.749026 seconds
-Iteration 3 took 35.721520 seconds
-Iteration 4 took 35.649248 seconds
-Iteration 5 took 36.031528 seconds
-Iteration 6 took 36.038426 seconds
-Iteration 7 took 35.804672 seconds
-Iteration 8 took 35.805110 seconds
-Iteration 9 took 35.845981 seconds
-Average time: 35.763267
+--------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------
+VERSION: V1 - CUDA with memory transfer every step 
+GENERAL PROBLEM:
+	Grid: 200 x 200
+	Grid spacing(h): 0.005000
+	Diffusion constant: 0.500000
+	Number of steps: 100000
+	Output: 100000 steps
+CUDA PARAMETERS:
+	Threads Per Block: 32 x 32
+	Blocks: 7 x 7 
+Iteration 0 took 36.228688 seconds
+Iteration 1 took 37.631412 seconds
+Iteration 2 took 37.635983 seconds
+Iteration 3 took 37.638788 seconds
+Iteration 4 took 37.632158 seconds
+Iteration 5 took 37.622967 seconds
+Iteration 6 took 37.615121 seconds
+Iteration 7 took 37.621104 seconds
+Iteration 8 took 37.621182 seconds
+Iteration 9 took 37.631902 seconds
 
-----------------------------------------------------------------------
-dim3 threadsPerBlock(32, 32);
-dim3 numBlocks(nx / threadsPerBlock.x + 1, ny / threadsPerBlock.y + 1);
+Average time: 37.487930
 
-Iteration 0 took 36.389696 seconds
-Iteration 1 took 36.967628 seconds
-Iteration 2 took 36.744630 seconds
-Iteration 3 took 36.564453 seconds
-Iteration 4 took 36.570719 seconds
-Iteration 5 took 36.569022 seconds
-Iteration 6 took 36.573574 seconds
-Iteration 7 took 36.969396 seconds
-Iteration 8 took 36.961083 seconds
-Iteration 9 took 36.967554 seconds
-Average time: 36.727775
-
-
---------------------------------------------------------------------------
-dim3 threadsPerBlock(8, 8);
-dim3 numBlocks(nx / threadsPerBlock.x + 1, ny / threadsPerBlock.y + 1);
-
-
-Iteration 0 took 34.932698 seconds
-Iteration 1 took 35.521954 seconds
-Iteration 2 took 35.511113 seconds
-Iteration 3 took 35.508895 seconds
-Iteration 4 took 35.520814 seconds
-Iteration 5 took 35.512688 seconds
-Iteration 6 took 35.509855 seconds
-Iteration 7 took 35.508427 seconds
-Iteration 8 took 35.508956 seconds
-Iteration 9 took 35.510083 seconds
-Average time: 35.454548
-
---------------------------------------------------------------------------
-dim3 threadsPerBlock(4, 4);
-dim3 numBlocks(nx / threadsPerBlock.x + 1, ny / threadsPerBlock.y + 1);
-
-
-Iteration 0 took 36.505391 seconds
-Iteration 1 took 36.488029 seconds
-Iteration 2 took 36.483743 seconds
-Iteration 3 took 36.488521 seconds
-Iteration 4 took 36.486744 seconds
-Iteration 5 took 36.482775 seconds
-Iteration 6 took 36.743095 seconds
-Iteration 7 took 36.726972 seconds
-Iteration 8 took 36.488833 seconds
-Iteration 9 took 36.492114 seconds
-Average time: 36.538622
-
-
---------------------------------------------------------------------------
-dim3 threadsPerBlock(2, 2);
-dim3 numBlocks(nx / threadsPerBlock.x + 1, ny / threadsPerBlock.y + 1);
-
-
-Iteration 0 took 46.215978 seconds
-Iteration 1 took 46.927603 seconds
-Iteration 2 took 46.666937 seconds
-Iteration 3 took 46.663497 seconds
-Iteration 4 took 46.837857 seconds
-Iteration 5 took 46.839315 seconds
-Iteration 6 took 46.663944 seconds
-Iteration 7 took 46.656185 seconds
-Iteration 8 took 47.089061 seconds
-Iteration 9 took 47.086547 seconds
-Average time: 46.764692
+--------------------------------------------------------------------------------------------

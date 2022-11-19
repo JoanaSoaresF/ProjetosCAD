@@ -96,6 +96,11 @@ __global__ void evolve_kernel(int offsetX, int offsetY, const float *Tn, float *
     }
 }
 
+double timedif(struct timespec *t, struct timespec *t0)
+{
+    return (t->tv_sec - t0->tv_sec) + 1.0e-9 * (double)(t->tv_nsec - t0->tv_nsec);
+}
+
 int main()
 {
     const int nx = 200;             // Width of the area
@@ -166,7 +171,9 @@ int main()
         }
 
         // Timing
-        clock_t start = clock();
+        // clock_t start = clock();
+        struct timespec start, finish;
+        clock_gettime(CLOCK_MONOTONIC, &start);
 
         // Main loop
         int offsetX, offsetY, offset;
@@ -221,8 +228,10 @@ int main()
         }
 
         // Timing
-        clock_t finish = clock();
-        double time = (double)(finish - start) / CLOCKS_PER_SEC;
+        // clock_t finish = clock();
+        // double time = (double)(finish - start) / CLOCKS_PER_SEC;
+        clock_gettime(CLOCK_MONOTONIC, &finish);
+        double time = timedif(&finish, &start);
         totalTime += time;
         printf("Iteration %d took %f seconds\n", i, time);
 

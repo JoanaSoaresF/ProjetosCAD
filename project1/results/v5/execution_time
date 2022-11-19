@@ -1,4 +1,30 @@
-#define BLOCK_SIZE 16
-#define STREAMCOUNT_X 4
-#define STREAMCOUNT_Y 4
+--------------------------------------------------------------------------------------------
+VERSION: V5 - streams without shared memory - initial transfer 
+GENERAL PROBLEM:
+	Grid: 200 x 200
+	Grid spacing(h): 0.005000
+	Diffusion constant: 0.500000
+	Number of steps: 100000
+ 	Output: 100000 steps
+CUDA PARAMETERS:
+	Threads Per Block: 16 x 16
+	Blocks: 156 x 4 
 
+STREAMS:
+	Number of streams: 4 x 2500
+	Stream Size: 0
+
+Iteration 0 took 0.508527 seconds
+Iteration 1 took 0.413456 seconds
+Iteration 2 took 0.432878 seconds
+Iteration 3 took 0.417842 seconds
+Iteration 4 took 0.415588 seconds
+Iteration 5 took 0.418426 seconds
+Iteration 6 took 0.427134 seconds
+Iteration 7 took 0.412959 seconds
+Iteration 8 took 0.416815 seconds
+Iteration 9 took 0.418184 seconds
+
+Average time: 0.428181
+
+--------------------------------------------------------------------------------------------

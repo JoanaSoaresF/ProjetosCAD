@@ -82,7 +82,8 @@ __global__ void evolve_kernel(const float *Tn, float *Tnp1, const int nx, const 
         int j = threadIdx.y + blockIdx.y * blockDim.y;
         if (j > 0 && j < ny - 1)
         {
-            for(int n = 1; n<=nelem; n++) {
+            for (int n = 1; n <= nelem; n++)
+            {
                 const int index = getIndex(n + i, j, ny);
                 float tij = Tn[index];
                 float tim1j = Tn[getIndex(n + i - 1, j, ny)];
@@ -105,7 +106,7 @@ __global__ void evolve_kernel(const float *Tn, float *Tnp1, const int nx, const 
 
             // int index;
             // for(int n = 1; n<=nelem; n++) {
-                
+
             //     up[n] = Tn[getIndex(i+n, j+1, ny)];
             //     sol[n] = Tn[getIndex(i+n, j, ny)];
             //     down[n] = Tn[getIndex(i+n, j-1, ny)];
@@ -127,9 +128,14 @@ __global__ void evolve_kernel(const float *Tn, float *Tnp1, const int nx, const 
             // float tijp1 = Tn[getIndex(i, j + 1, ny)];
 
             // Explicit scheme
-            //Tnp1[index] = tij + a * dt * ((tim1j + tip1j + tijm1 + tijp1 - 4.0 * tij) / h2);
+            // Tnp1[index] = tij + a * dt * ((tim1j + tip1j + tijm1 + tijp1 - 4.0 * tij) / h2);
         }
     }
+}
+
+double timedif(struct timespec *t, struct timespec *t0)
+{
+    return (t->tv_sec - t0->tv_sec) + 1.0e-9 * (double)(t->tv_nsec - t0->tv_nsec);
 }
 
 int main()
@@ -138,8 +144,8 @@ int main()
     const int ny = 200;             // Height of the area
     const float a = 0.5;            // Diffusion constant
     const float h = 0.005;          // h=dx=dy  grid spacing
-    const int numSteps = 100000;     // Number of time steps to simulate (time=numSteps*dt)
-    const int outputEvery = 100000;  // How frequently to write output image
+    const int numSteps = 100000;    // Number of time steps to simulate (time=numSteps*dt)
+    const int outputEvery = 100000; // How frequently to write output image
 
     const float h2 = h * h;
 
@@ -148,12 +154,12 @@ int main()
     int numElements = nx * ny;
     // Allocate two sets of data for current and next timesteps
 
-    //QUESTION ???
+    // QUESTION ???
     int threadSize = nx;
-    dim3 threadsPerBlock(1, BLOCK_SIZE	* BLOCK_SIZE);
+    dim3 threadsPerBlock(1, BLOCK_SIZE * BLOCK_SIZE);
     dim3 numBlocks(nx / threadsPerBlock.x + 1, ny / threadsPerBlock.y + 1);
-    //dim3 threadsPerBlock(BLOCK_SIZE	, BLOCK_SIZE);
-    //dim3 numBlocks(nx / threadsPerBlock.x + 1, ny / threadsPerBlock.y + 1);
+    // dim3 threadsPerBlock(BLOCK_SIZE	, BLOCK_SIZE);
+    // dim3 numBlocks(nx / threadsPerBlock.x + 1, ny / threadsPerBlock.y + 1);
 
     printf("--------------------------------------------------------------------------------------------\n");
     printf("VERSION: %s \n"
@@ -167,7 +173,6 @@ int main()
            "\tThreads Per Block: %d x %d\n"
            "\tBlocks: %d x %d \n\n",
            VERSION, nx, ny, h, a, numSteps, outputEvery, threadsPerBlock.x, threadsPerBlock.y, numBlocks.x, numBlocks.y);
-
 
     double totalTime = 0;
     for (int i = 0; i < NUM_ITERATIONS; i++)
@@ -191,7 +196,9 @@ int main()
         writeTemp(h_Tn, nx, ny, 0);
 
         // Timing
-        clock_t start = clock();
+        // clock_t start = clock();
+        struct timespec start, finish;
+        clock_gettime(CLOCK_MONOTONIC, &start);
 
         // Main loop
 
@@ -223,8 +230,10 @@ int main()
         }
 
         // Timing
-        clock_t finish = clock();
-        double time = (double)(finish - start) / CLOCKS_PER_SEC;
+        // clock_t finish = clock();
+        // double time = (double)(finish - start) / CLOCKS_PER_SEC;
+        clock_gettime(CLOCK_MONOTONIC, &finish);
+        double time = timedif(&finish, &start);
         totalTime += time;
         printf("Iteration %d took %f seconds\n", i, time);
 

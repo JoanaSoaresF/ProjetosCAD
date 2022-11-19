@@ -78,16 +78,19 @@ For the sake of completeness, we tested with blocks smaller than 68 threads, and
     \begin{axis}[
         ylabel={Execution time (seconds)},
         xlabel={Threads per block},
-        symbolic x coords={1,4, 16, 64, 256, 1024},
-        xtick=data
+        symbolic x coords={1x1,2x2, 4x4, 8x8, 16x16, 32x32},
+        xtick=data,
+        nodes near coords={
+            \pgfmathprintnumber[precision=1]{\pgfplotspointmeta}
+          },
       ]
       \addplot[ybar,fill=blue] coordinates {
-          (1,   84.463241)
-          (4,   46.764692)
-          (16,  36.538622)
-          (64,   35.454548)
-          (256,   35.763267)
-          (1024,   36.727775)
+          (1x1,   85.193986)
+          (2x2,   47.489448)
+          (4x4,  37.025578)
+          (8x8,   36.132327)
+          (16x16,   36.295435)
+          (32x32,   37.487930)
         };
     \end{axis}
   \end{tikzpicture}
@@ -96,28 +99,62 @@ For the sake of completeness, we tested with blocks smaller than 68 threads, and
 \end{figure}
 
 Analyzing this version using the profiling tool \texttt{NVPROF} we can conclude that the majority of execution time is spent in communication between the host and the device, with only  22.19\% of the execution time dedicated to kernel execution. The program spends 41.74\% of time copying data from the host to the device and 36.07\% from the device to the host. The complete results are available at \texttt{results/v1/nvprof\_results}.
+From this iteration, we concluded that the better configuration is to use 16x16 threads. We will use this configuration in the next versions.
 
 \subsection{V2 Version - Better comunication}
 In this version, we intend to improve the previous naive implementation, reducing the communication between the host and the device, which we detect to be a big problem in the previous version. In this problem, there aren't any computations needed between the steps so we don't need to transfer the data to the host between steps.
 
-As expected we got a huge improvement in execution time. This version has an average execution time of 2.106914 seconds. Using \texttt{NVPROF} we can see that now the kernel is executing 100.00\% of the total execution time. The full report is in \texttt{results/v2/nvprof\_results}.
+% TODO mudar o tempo
+As expected we got a huge improvement in execution time. This version has an average execution time of 2.172697 seconds. Using \texttt{NVPROF} we can see that now the kernel is executing 100.00\% of the total execution time. The full report is in \texttt{results/v2/nvprof\_results}.
 
-We decided, from now on, to increase the complexity of the problem by increasing the amount of work, to better spot the improvements. So we define \texttt{numSteps = 100000}, and maintain the output of the image in the beginning and end.
+We want to understand the impact that this new communication profile is affected by the number of threads so we conduct an analysis similar to the previous one, showing the results in \autoref{fig:executionTimeV2}.
 
-With this new parameter, the average execution time is 25.280373 seconds.
+\begin{figure}[ht]
+  \centering
+  \begin{tikzpicture}
+
+    \begin{axis}[
+        ylabel={Execution time (seconds)},
+        xlabel={Threads per block},
+        symbolic x coords={1x1,2x2, 4x4, 8x8, 16x16, 32x32},
+        xtick=data,
+        nodes near coords={
+            \pgfmathprintnumber[precision=1]{\pgfplotspointmeta}
+          },
+      ]
+      \addplot[ybar,fill=blue] coordinates {
+          (1x1,   51.719873)
+          (2x2,   13.972750)
+          (4x4,  3.735481)
+          (8x8,   2.025430)
+          (16x16,   2.172697)
+          (32x32,   2.798723)
+        };
+    \end{axis}
+  \end{tikzpicture}
+  \caption{Execution time of different grid configurations for V2}
+  \label{fig:executionTimeV2}
+\end{figure}
+We maintain the use of the 16x16 configuration as the default for this version.
+
+% We decided, from now on, to increase the complexity of the problem by increasing the amount of work, to better spot the improvements. So we define \texttt{numSteps = 1000000}, and maintain the output of the image in the beginning and end.
+
+% With this new parameter, the average execution time is 25.280373 seconds.
 
 \subsection{V3 Version - Shared Memory}
 Looking deeper into our current solution we realize that the same array position is accessed by five different threads, thus revealing a great opportunity for the use of shared memory.
 
 In this version, we take advantage of the shared memory between threads of the same block. Each thread starts by coping a value to the shared memory and after synchronization, the thread computes the designated value.
 
-This version had an average execution time of 2.199574 seconds, which doesn't show any improvement from the previous version. This may be because of the overhead introduced by copying each element and the threads' synchronization is not balanced by faster access to the shared memory.
+This version had an average execution time of 2.206946 seconds, which doesn't show any improvement from the previous version. This may be because of the overhead introduced by copying each element and the threads' synchronization is not balanced by faster access to the shared memory.
 
 \subsection{V4 Version - Streams with shared memory}
 After analyzing our version with shared memory we focused decided to add streams to this version despite not expecting any big improvement when working with a small grid.
 
 Our implementation adds streams that allow the device to run as soon as the first partition of our table is downloaded. Since our function works with smaller squares we have a two-dimension cycle in order to copy the necessary data.
+% FIXME há algo de muito errado com esta versão!! Output mal e tempo demasiado rápido
 
+% TODO atualizar valores
 We were already expecting the results we got, an average execution time of 2.230349 seconds when using 16 streams (4*4). Even if it is worse than our previous time, it's to be expected because our grid is too small. The majority of the time is spent on the execution of steps, so, the time saved in execution doesn't balance the time lost with the creation and initialization of streams.
 
 
@@ -132,7 +169,7 @@ We expect streams to prove advantageous when we want the output in intermediate 
 
 For larger values of \texttt{outputEvery}, we cannot see significant differences revealing that the costs required for synchronization are not balanced by the overlap of communication with synchronization. But with lower values, we have begun to see the advantages in the use of streams. We can see the results in \autoref{fig:v2andv6OutputSteps}.
 
-With the results on every step is where we see the better improvement allowed by streams, in the end of every step um can overlap the execution of the next step with the transfer of the previous result and its writing on a host file.
+With the results on every step is where we see the better improvement allowed by streams, in the end of every step we can overlap the execution of the next step with the transfer of the previous result and its writing on a host file.
 
 
 \begin{figure}[ht]
@@ -156,10 +193,10 @@ With the results on every step is where we see the better improvement allowed by
 
       % V2
       \addplot
-      coordinates {(1000, 3.596356) (100, 8.412381) (10, 59.388425) (1, 564.774576)};
+      coordinates {(1000, 2.792264) (100, 9.190634) (10, 66.757882) (1, 623.521411)};
       % V6 
       \addplot
-      coordinates {(1000, 2.658484) (100, 8.265419) (10, 58.153837) (1, 277.208141)};
+      coordinates {(1000, 2.758605) (100, 9.334019) (10, 66.824627) (1, 336.616278)};
 
       \legend{V2,V6}
     \end{axis}
@@ -185,7 +222,7 @@ As we can see the use of streams does not appear to improve the performance when
             anchor=north,legend columns=-1},
         ylabel={Execution time (seconds)},
         xlabel={Number of steps between output},
-        symbolic x coords={200x200, 400x400, 800x800, 2000x2000},
+        symbolic x coords={200x200, 400x400, 800x800, 1600x1600},
         xtick=data,
         bar width = 17pt,
         nodes near coords={
@@ -196,10 +233,10 @@ As we can see the use of streams does not appear to improve the performance when
 
       % V2
       \addplot
-      coordinates {(200x200, 3.596356) (400x400, 9.045749) (800x800, 37.804506) (2000x2000, 247.119578)};
+      coordinates {(200x200, 2.792264) (400x400, 9.154722) (800x800, 37.918869) (1600x1600, 154.764305)};
       % V6 
       \addplot
-      coordinates {(200x200, 2.658484) (400x400, 9.047637) (800x800, 37.634587) (2000x2000, 243.798113)};
+      coordinates {(200x200, 2.792264) (400x400, 9.309657) (800x800, 38.313756) (1600x1600, 155.506449)};
 
       \legend{V2,V6}
     \end{axis}
@@ -210,6 +247,7 @@ As we can see the use of streams does not appear to improve the performance when
 
 \section{Results}
 
+% TODO atualizar valores
 \begin{figure}[ht]
   \centering
   \begin{subfigure}[b]{0.24\textwidth}

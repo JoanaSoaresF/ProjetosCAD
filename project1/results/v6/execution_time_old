@@ -1,3 +1,34 @@
+
+--------------------------------------------------------------------------------------------
+VERSION: V6 - streams in output steps 
+GENERAL PROBLEM:
+	Grid: 200 x 200
+	Grid spacing(h): 0.005000
+	Diffusion constant: 0.500000
+	Number of steps: 100000
+ 	Output: 10 steps
+CUDA PARAMETERS:
+	Threads Per Block: 16 x 16
+	Blocks: 13 x 13 
+
+STREAMS:
+	Number of streams: 1
+	Stream Size: 40000
+
+Iteration 0 took 57.324991 seconds
+Iteration 1 took 58.153250 seconds
+Iteration 2 took 58.111674 seconds
+Iteration 3 took 58.067149 seconds
+Iteration 4 took 58.225205 seconds
+Iteration 5 took 58.498372 seconds
+Iteration 6 took 58.183622 seconds
+Iteration 7 took 58.267069 seconds
+Iteration 8 took 58.160485 seconds
+Iteration 9 took 58.546556 seconds
+
+Average time: 58.153837
+
+--------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------
 VERSION: V6 - streams in output steps 
 GENERAL PROBLEM:
@@ -14,18 +45,18 @@ STREAMS:
 	Number of streams: 1
 	Stream Size: 40000
 
-Iteration 0 took 2.758471 seconds
-Iteration 1 took 2.821126 seconds
-Iteration 2 took 2.713694 seconds
-Iteration 3 took 2.739532 seconds
-Iteration 4 took 2.730771 seconds
-Iteration 5 took 2.741191 seconds
-Iteration 6 took 2.725628 seconds
-Iteration 7 took 2.730915 seconds
-Iteration 8 took 2.870407 seconds
-Iteration 9 took 2.754321 seconds
+Iteration 0 took 2.719308 seconds
+Iteration 1 took 2.649315 seconds
+Iteration 2 took 2.652927 seconds
+Iteration 3 took 2.640726 seconds
+Iteration 4 took 2.651711 seconds
+Iteration 5 took 2.664671 seconds
+Iteration 6 took 2.658361 seconds
+Iteration 7 took 2.653682 seconds
+Iteration 8 took 2.645435 seconds
+Iteration 9 took 2.648704 seconds
 
-Average time: 2.758605
+Average time: 2.658484
 
 --------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------
@@ -44,48 +75,18 @@ STREAMS:
 	Number of streams: 1
 	Stream Size: 40000
 
-Iteration 0 took 9.746741 seconds
-Iteration 1 took 9.116930 seconds
-Iteration 2 took 9.245826 seconds
-Iteration 3 took 9.377535 seconds
-Iteration 4 took 9.541156 seconds
-Iteration 5 took 9.378107 seconds
-Iteration 6 took 9.135017 seconds
-Iteration 7 took 9.107942 seconds
-Iteration 8 took 9.211364 seconds
-Iteration 9 took 9.479576 seconds
+Iteration 0 took 8.286534 seconds
+Iteration 1 took 8.257622 seconds
+Iteration 2 took 8.204307 seconds
+Iteration 3 took 8.273535 seconds
+Iteration 4 took 8.232967 seconds
+Iteration 5 took 8.243984 seconds
+Iteration 6 took 8.304401 seconds
+Iteration 7 took 8.276256 seconds
+Iteration 8 took 8.268114 seconds
+Iteration 9 took 8.306474 seconds
 
-Average time: 9.334019
-
---------------------------------------------------------------------------------------------
---------------------------------------------------------------------------------------------
-VERSION: V6 - streams in output steps 
-GENERAL PROBLEM:
-	Grid: 200 x 200
-	Grid spacing(h): 0.005000
-	Diffusion constant: 0.500000
-	Number of steps: 100000
- 	Output: 10 steps
-CUDA PARAMETERS:
-	Threads Per Block: 16 x 16
-	Blocks: 13 x 13 
-
-STREAMS:
-	Number of streams: 1
-	Stream Size: 40000
-
-Iteration 0 took 69.230348 seconds
-Iteration 1 took 66.894517 seconds
-Iteration 2 took 66.845542 seconds
-Iteration 3 took 66.236260 seconds
-Iteration 4 took 66.530971 seconds
-Iteration 5 took 66.084640 seconds
-Iteration 6 took 66.468992 seconds
-Iteration 7 took 66.353711 seconds
-Iteration 8 took 66.418859 seconds
-Iteration 9 took 67.182429 seconds
-
-Average time: 66.824627
+Average time: 8.265419
 
 --------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------
@@ -104,10 +105,10 @@ STREAMS:
 	Number of streams: 1
 	Stream Size: 40000
 
-Iteration 0 took 338.950241 seconds
-Iteration 1 took 334.282315 seconds
+Iteration 0 took 275.926784 seconds
+Iteration 1 took 278.489498 seconds
 
-Average time: 336.616278
+Average time: 277.208141
 
 --------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------
@@ -126,18 +127,18 @@ STREAMS:
 	Number of streams: 1
 	Stream Size: 160000
 
-Iteration 0 took 9.306853 seconds
-Iteration 1 took 9.245128 seconds
-Iteration 2 took 9.273047 seconds
-Iteration 3 took 9.268448 seconds
-Iteration 4 took 9.286474 seconds
-Iteration 5 took 9.299726 seconds
-Iteration 6 took 9.333509 seconds
-Iteration 7 took 9.335434 seconds
-Iteration 8 took 9.317673 seconds
-Iteration 9 took 9.430280 seconds
+Iteration 0 took 9.013722 seconds
+Iteration 1 took 8.933769 seconds
+Iteration 2 took 8.985304 seconds
+Iteration 3 took 8.991668 seconds
+Iteration 4 took 9.037494 seconds
+Iteration 5 took 8.997261 seconds
+Iteration 6 took 9.005754 seconds
+Iteration 7 took 9.026979 seconds
+Iteration 8 took 9.079127 seconds
+Iteration 9 took 9.405290 seconds
 
-Average time: 9.309657
+Average time: 9.047637
 
 --------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------
@@ -156,39 +157,64 @@ STREAMS:
 	Number of streams: 1
 	Stream Size: 640000
 
-Iteration 0 took 39.049849 seconds
-Iteration 1 took 38.942459 seconds
-Iteration 2 took 38.002148 seconds
-Iteration 3 took 38.082154 seconds
-Iteration 4 took 38.339421 seconds
-Iteration 5 took 38.435711 seconds
-Iteration 6 took 37.933753 seconds
-Iteration 7 took 38.435711 seconds
-Iteration 8 took 38.083738 seconds
-Iteration 9 took 37.832621 seconds
+Iteration 0 took 37.293932 seconds
+Iteration 1 took 37.733285 seconds
+Iteration 2 took 37.490665 seconds
+Iteration 3 took 37.958658 seconds
+Iteration 4 took 37.557535 seconds
+Iteration 5 took 37.710388 seconds
+Iteration 6 took 37.683956 seconds
+Iteration 7 took 37.669013 seconds
+Iteration 8 took 37.697799 seconds
+Iteration 9 took 37.550643 seconds
 
-Average time: 38.313756
+Average time: 37.634587
 
 --------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------
 VERSION: V6 - streams in output steps 
 GENERAL PROBLEM:
-	Grid: 1600 x 1600
+	Grid: 2000 x 2000
 	Grid spacing(h): 0.005000
 	Diffusion constant: 0.500000
 	Number of steps: 100000
  	Output: 1000 steps
 CUDA PARAMETERS:
 	Threads Per Block: 16 x 16
-	Blocks: 101 x 101 
+	Blocks: 126 x 126 
 
 STREAMS:
 	Number of streams: 1
-	Stream Size: 2560000
+	Stream Size: 4000000
 
-Iteration 0 took 155.289621 seconds
-Iteration 1 took 155.723276 seconds
+Iteration 0 took 248.278151 seconds
+Iteration 1 took 242.956701 seconds
+Iteration 2 took 242.251817 seconds
+Iteration 3 took 242.584428 seconds
+Iteration 4 took 242.919467 seconds
 
-Average time: 155.506449
+Average time: 243.798113
+
+--------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------
+VERSION: V6 - streams in output steps 
+GENERAL PROBLEM:
+	Grid: 4000 x 4000
+	Grid spacing(h): 0.005000
+	Diffusion constant: 0.500000
+	Number of steps: 100000
+ 	Output: 1000 steps
+CUDA PARAMETERS:
+	Threads Per Block: 16 x 16
+	Blocks: 251 x 251 
+
+STREAMS:
+	Number of streams: 1
+	Stream Size: 16000000
+
+Iteration 0 took 1087.983514 seconds
+Iteration 1 took 1068.130658 seconds
+
+Average time: 1078.057086
 
 --------------------------------------------------------------------------------------------

@@ -16,9 +16,9 @@
 
 #define NUM_ITERATIONS 10
 #define BLOCK_SIZE 16
-#define STREAMCOUNT_X 8
-#define STREAMCOUNT_Y 8
-#define VERSION "V3 - Streams with shared memory - initial transfer"
+#define STREAMCOUNT_X 4
+#define STREAMCOUNT_Y 4
+#define VERSION "V4 - Streams with shared memory - initial transfer"
 //#define STREAMCOUNT = STREAMCOUNT_X * STREAMCOUNT_Y
 
 /* Convert 2D index layout to Tnrolled 1D layout
@@ -131,6 +131,11 @@ __global__ void evolve_kernel(int offsetX, int offsetY, const float *Tn, float *
     }
 }
 
+double timedif(struct timespec *t, struct timespec *t0)
+{
+    return (t->tv_sec - t0->tv_sec) + 1.0e-9 * (double)(t->tv_nsec - t0->tv_nsec);
+}
+
 int main()
 {
     const int nx = 200;             // Width of the area
@@ -167,7 +172,7 @@ int main()
            "\tOutput: %d steps\n"
            "CUDA PARAMETERS:\n"
            "\tThreads Per Block: %d x %d\n"
-           "\tBlocks: %d x %d \n\n"
+           "\tBlocks: %d\n\n"
            "STREAMS:\n"
            "\tNumber of streams: %d x %d\n"
            "\tStream Size: %d\n\n",
@@ -197,6 +202,7 @@ int main()
         int offsetX = 0;
         int offsetY = 0;
         cudaStream_t *streams = (cudaStream_t *)malloc(STREAMCOUNT_X * STREAMCOUNT_Y * sizeof(cudaStream_t));
+        //FIXME algo está muito errado! Tempo demasiado rápido, output mal. Acho que o problema é no número de blocos!
 
         for (int s = 0; s < STREAMCOUNT_X * STREAMCOUNT_Y; s++)
         {
@@ -204,7 +210,9 @@ int main()
         }
 
         // Timing
-        clock_t start = clock();
+        // clock_t start = clock();
+        struct timespec start, finish;
+        clock_gettime(CLOCK_MONOTONIC, &start);
 
         for (int ystream = 0; ystream < STREAMCOUNT_Y; ystream++)
         {
@@ -252,11 +260,6 @@ int main()
             {
                 cudaMemcpy(h_Tn, d_Tn, numElements * sizeof(float), cudaMemcpyDeviceToHost);
                 cudaMemcpy(h_Tnp1, d_Tnp1, numElements * sizeof(float), cudaMemcpyDeviceToHost);
-                if (errorCode != cudaSuccess)
-                {
-                    printf("Cuda error %d: %s\n", errorCode, cudaGetErrorString(errorCode));
-                    exit(0);
-                }
                 writeTemp(h_Tnp1, nx, ny, n + 1);
             }
 
@@ -267,8 +270,10 @@ int main()
         }
 
         // Timing
-        clock_t finish = clock();
-        double time = (double)(finish - start) / CLOCKS_PER_SEC;
+        // clock_t finish = clock();
+        // double time = (double)(finish - start) / CLOCKS_PER_SEC;
+        clock_gettime(CLOCK_MONOTONIC, &finish);
+        double time = timedif(&finish, &start);
         totalTime += time;
         printf("Iteration %d took %f seconds\n", i, time);
 

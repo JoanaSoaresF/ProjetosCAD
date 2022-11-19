@@ -14,9 +14,8 @@
 #include "pngwriter.h"
 #endif
 
-#define BLOCK_SIZE_X 16
-#define BLOCK_SIZE_Y 16
-#define NUM_ITERATIONS 1
+#define BLOCK_SIZE 16
+#define NUM_ITERATIONS 10
 #define VERSION "V1 - CUDA with memory transfer every step"
 
 /* Convert 2D index layout to unrolled 1D layout
@@ -96,6 +95,11 @@ __global__ void evolve_kernel(const float *Tn, float *Tnp1, const int nx, const 
     }
 }
 
+double timedif(struct timespec *t, struct timespec *t0)
+{
+    return (t->tv_sec - t0->tv_sec) + 1.0e-9 * (double)(t->tv_nsec - t0->tv_nsec);
+}
+
 int main()
 {
     const int nx = 200;             // Width of the area
@@ -111,16 +115,16 @@ int main()
 
     int numElements = nx * ny;
     // Allocate two sets of data for current and next timesteps
-    dim3 threadsPerBlock(BLOCK_SIZE_X, BLOCK_SIZE_Y);
+    dim3 threadsPerBlock(BLOCK_SIZE, BLOCK_SIZE);
     dim3 numBlocks(nx / threadsPerBlock.x + 1, ny / threadsPerBlock.y + 1);
 
     printf("--------------------------------------------------------------------------------------------\n");
     printf("VERSION: %s \n"
            "GENERAL PROBLEM:\n"
            "\tGrid: %d x %d\n"
-           "\tGrid spacing(h): %d\n"
-           "\tDiffusion constant: %a\n"
-           "\tNumber of steps:%d\n"
+           "\tGrid spacing(h): %f\n"
+           "\tDiffusion constant: %f\n"
+           "\tNumber of steps: %d\n"
            "\tOutput: %d steps\n"
            "CUDA PARAMETERS:\n"
            "\tThreads Per Block: %d x %d\n"
@@ -147,7 +151,9 @@ int main()
         writeTemp(h_Tn, nx, ny, 0);
 
         // Timing
-        clock_t start = clock();
+        // clock_t start = clock();
+        struct timespec start, finish;
+        clock_gettime(CLOCK_MONOTONIC, &start);
 
         // Main loop
 
@@ -180,8 +186,9 @@ int main()
         }
 
         // Timing
-        clock_t finish = clock();
-        double time = (double)(finish - start) / CLOCKS_PER_SEC;
+        // clock_t finish = clock();
+        clock_gettime(CLOCK_MONOTONIC, &finish);
+        double time = timedif(&finish, &start);
         totalTime += time;
         printf("Iteration %d took %f seconds\n", i, time);
 

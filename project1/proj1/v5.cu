@@ -18,7 +18,7 @@
 #define BLOCK_SIZE 16
 #define STREAMCOUNT_X 4
 #define STREAMCOUNT_Y 4
-#define VERSION "V5 - streamns withou shared memory - initial transfer"
+#define VERSION "V5 - streams without shared memory - initial transfer"
 //#define STREAMCOUNT = STREAMCOUNT_X * STREAMCOUNT_Y
 
 /* Convert 2D index layout to unrolled 1D layout
@@ -98,14 +98,19 @@ __global__ void evolve_kernel(int offsetX, int offsetY, const float *Tn, float *
     }
 }
 
+double timedif(struct timespec *t, struct timespec *t0)
+{
+    return (t->tv_sec - t0->tv_sec) + 1.0e-9 * (double)(t->tv_nsec - t0->tv_nsec);
+}
+
 int main()
 {
-    const int nx = 2000;             // Width of the area
-    const int ny = 2000;             // Height of the area
-    const float a = 0.5;             // Diffusion constant
-    const float h = 0.005;           // h=dx=dy  grid spacing
-    const int numSteps = 1000000;    // Number of time steps to simulate (time=numSteps*dt) .  1000000
-    const int outputEvery = 1000000; // How frequently to write output image
+    const int nx = 200;             // Width of the area
+    const int ny = 200;             // Height of the area
+    const float a = 0.5;            // Diffusion constant
+    const float h = 0.005;          // h=dx=dy  grid spacing
+    const int numSteps = 100000;    // Number of time steps to simulate (time=numSteps*dt) .  1000000
+    const int outputEvery = 100000; // How frequently to write output image
 
     const float h2 = h * h;
 
@@ -124,6 +129,7 @@ int main()
     dim3 threadsPerBlock(BLOCK_SIZE, BLOCK_SIZE);
     int numBlocks = streamSize / BLOCK_SIZE;
 
+    // FIXME mesmo problema que a versão 4
     printf("--------------------------------------------------------------------------------------------\n");
     printf("VERSION: %s \n"
            "GENERAL PROBLEM:\n"
@@ -134,7 +140,7 @@ int main()
            "\tOutput: %d steps\n"
            "CUDA PARAMETERS:\n"
            "\tThreads Per Block: %d x %d\n"
-           "\tBlocks: %d x %d \n\n"
+           "\tBlocks: %d\n\n"
            "STREAMS:\n"
            "\tNumber of streams: %d x %d\n"
            "\tStream Size: %d\n\n",
@@ -173,7 +179,9 @@ int main()
         }
 
         // Timing
-        clock_t start = clock();
+        // clock_t start = clock();
+        struct timespec start, finish;
+        clock_gettime(CLOCK_MONOTONIC, &start);
 
         for (int ystream = 0; ystream < STREAMCOUNT_Y; ystream++)
         {
@@ -234,8 +242,10 @@ int main()
         }
 
         // Timing
-        clock_t finish = clock();
-        double time = (double)(finish - start) / CLOCKS_PER_SEC;
+        // clock_t finish = clock();
+        // double time = (double)(finish - start) / CLOCKS_PER_SEC;
+        clock_gettime(CLOCK_MONOTONIC, &finish);
+        double time = timedif(&finish, &start);
         totalTime += time;
         printf("Iteration %d took %f seconds\n", i, time);
 

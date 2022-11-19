@@ -97,6 +97,11 @@ __global__ void evolve_kernel(int offsetX, int offsetY, const float *Tn, float *
     }
 }
 
+double timedif(struct timespec *t, struct timespec *t0)
+{
+    return (t->tv_sec - t0->tv_sec) + 1.0e-9 * (double)(t->tv_nsec - t0->tv_nsec);
+}
+
 int main()
 {
     const int nx = 200;            // Width of the area
@@ -114,22 +119,6 @@ int main()
     // Allocate two sets of data for current and next timesteps
     dim3 threadsPerBlock(BLOCK_SIZE, BLOCK_SIZE);
     dim3 numBlocks(nx / threadsPerBlock.x + 1, ny / threadsPerBlock.y + 1);
-
-    printf("--------------------------------------------------------------------------------------------\n");
-    printf("VERSION: %s \n"
-           "GENERAL PROBLEM:\n"
-           "\tGrid: %d x %d\n"
-           "\tGrid spacing(h): %f\n"
-           "\tDiffusion constant: %f\n"
-           "\tNumber of steps: %d\n "
-           "\tOutput: %d steps\n"
-           "CUDA PARAMETERS:\n"
-           "\tThreads Per Block: %d x %d\n"
-           "\tBlocks: %d x %d \n\n"
-           "STREAMS:\n"
-           "\tNumber of streams: %d x %d\n"
-           "\tStream Size: %d\n\n",
-           VERSION, nx, ny, h, a, numSteps, outputEvery, threadsPerBlock.x, threadsPerBlock.y, numBlocks, STREAMCOUNT_X, STREAMCOUNT_Y, 0);
 
     double totalTime = 0;
     for (int i = 0; i < NUM_ITERATIONS; i++)
@@ -156,6 +145,22 @@ int main()
         int streamSizeX = ceil((nx) / STREAMCOUNT_X);
         int streamSizeY = ceil((ny) / STREAMCOUNT_Y);
 
+        printf("--------------------------------------------------------------------------------------------\n");
+        printf("VERSION: %s \n"
+               "GENERAL PROBLEM:\n"
+               "\tGrid: %d x %d\n"
+               "\tGrid spacing(h): %f\n"
+               "\tDiffusion constant: %f\n"
+               "\tNumber of steps: %d\n "
+               "\tOutput: %d steps\n"
+               "CUDA PARAMETERS:\n"
+               "\tThreads Per Block: %d x %d\n"
+               "\tBlocks: %d x %d \n\n"
+               "STREAMS:\n"
+               "\tNumber of streams: %d x %d\n"
+               "\tStream Size: %d x %d\n\n",
+               VERSION, nx, ny, h, a, numSteps, outputEvery, threadsPerBlock.x, threadsPerBlock.y, numBlocks, STREAMCOUNT_X, STREAMCOUNT_Y, streamSizeX, streamSizeY);
+
         //    Create streams
         int nStreams = STREAMCOUNT_X * STREAMCOUNT_Y;
         cudaStream_t stream[nStreams];
@@ -168,7 +173,9 @@ int main()
         }
 
         // Timing
-        clock_t start = clock();
+        // clock_t start = clock();
+        struct timespec start, finish;
+        clock_gettime(CLOCK_MONOTONIC, &start);
 
         // Main loop
         int offsetX, offsetY, offset;
@@ -259,9 +266,11 @@ int main()
         }
 
         // Timing
-        clock_t finish = clock();
-        double time = (double)(finish - start) / CLOCKS_PER_SEC;
-        totalTime += time;
+        // clock_t finish = clock();
+        // double time = (double)(finish - start) / CLOCKS_PER_SEC;
+        // totalTime += time;
+        clock_gettime(CLOCK_MONOTONIC, &finish);
+        double time = timedif(&finish, &start);
         printf("Iteration %d took %f seconds\n", i, time);
 
         // Release the memory

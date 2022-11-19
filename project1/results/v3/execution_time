@@ -1,62 +1,78 @@
-#define BLOCK_SIZE 16
+--------------------------------------------------------------------------------------------
+VERSION: V3 - shared memory 
+GENERAL PROBLEM:
+	Grid: 200 x 200
+	Grid spacing(h): 0.005000
+	Diffusion constant: 0.500000
+	Number of steps: 100000
+ 	Output: 100000 steps
+CUDA PARAMETERS:
+	Threads Per Block: 16 x 16
+	Blocks: 13 x 13 
 
-Iteration 0 took 2.264318 seconds
-Iteration 1 took 2.186156 seconds
-Iteration 2 took 2.185978 seconds
-Iteration 3 took 2.185588 seconds
-Iteration 4 took 2.185863 seconds
-Iteration 5 took 2.195645 seconds
-Iteration 6 took 2.198061 seconds
-Iteration 7 took 2.198128 seconds
-Iteration 8 took 2.197991 seconds
-Iteration 9 took 2.198013 seconds
-Average time: 2.199574
+Iteration 0 took 2.286783 seconds
+Iteration 1 took 2.196558 seconds
+Iteration 2 took 2.198127 seconds
+Iteration 3 took 2.197900 seconds
+Iteration 4 took 2.201195 seconds
+Iteration 5 took 2.197799 seconds
+Iteration 6 took 2.197753 seconds
+Iteration 7 took 2.197749 seconds
+Iteration 8 took 2.197735 seconds
+Iteration 9 took 2.197862 seconds
 
------------------------------------------------------------------------
-#define BLOCK_SIZE 32
+Average time: 2.206946
 
+--------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------
+VERSION: V3 - shared memory 
+GENERAL PROBLEM:
+	Grid: 200 x 200
+	Grid spacing(h): 0.005000
+	Diffusion constant: 0.500000
+	Number of steps: 100000
+ 	Output: 100000 steps
+CUDA PARAMETERS:
+	Threads Per Block: 8 x 8
+	Blocks: 26 x 26 
 
-Iteration 0 took 2.747932 seconds
-Iteration 1 took 2.643949 seconds
-Iteration 2 took 2.640556 seconds
-Iteration 3 took 2.651768 seconds
-Iteration 4 took 2.655281 seconds
-Iteration 5 took 2.654604 seconds
-Iteration 6 took 2.655392 seconds
-Iteration 7 took 2.652898 seconds
-Iteration 8 took 2.656957 seconds
-Iteration 9 took 2.657348 seconds
-Average time: 2.661668
+Iteration 0 took 2.269418 seconds
+Iteration 1 took 2.188828 seconds
+Iteration 2 took 2.188994 seconds
+Iteration 3 took 2.189236 seconds
+Iteration 4 took 2.189047 seconds
+Iteration 5 took 2.189053 seconds
+Iteration 6 took 2.189063 seconds
+Iteration 7 took 2.193561 seconds
+Iteration 8 took 2.194800 seconds
+Iteration 9 took 2.194783 seconds
 
+Average time: 2.198678
 
------------------------------------------------------
-#define BLOCK_SIZE 8
+--------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------
+VERSION: V3 - shared memory 
+GENERAL PROBLEM:
+	Grid: 200 x 200
+	Grid spacing(h): 0.005000
+	Diffusion constant: 0.500000
+	Number of steps: 100000
+ 	Output: 100000 steps
+CUDA PARAMETERS:
+	Threads Per Block: 32 x 32
+	Blocks: 7 x 7 
 
-Iteration 0 took 2.284724 seconds
-Iteration 1 took 2.189417 seconds
-Iteration 2 took 2.187711 seconds
-Iteration 3 took 2.189795 seconds
-Iteration 4 took 2.189697 seconds
-Iteration 5 took 2.189794 seconds
-Iteration 6 took 2.189760 seconds
-Iteration 7 took 2.189749 seconds
-Iteration 8 took 2.189465 seconds
-Iteration 9 took 2.189703 seconds
-Average time: 2.198981
+Iteration 0 took 2.741417 seconds
+Iteration 1 took 2.690318 seconds
+Iteration 2 took 2.657734 seconds
+Iteration 3 took 2.660014 seconds
+Iteration 4 took 2.661063 seconds
+Iteration 5 took 2.661350 seconds
+Iteration 6 took 2.661132 seconds
+Iteration 7 took 2.660563 seconds
+Iteration 8 took 2.661273 seconds
+Iteration 9 took 2.661765 seconds
 
+Average time: 2.671663
 
-------------------------------------------------------------------------------
-const int nx = 2000;             // Width of the area
-const int ny = 2000;             // Height of the area
-
-Iteration 0 took 236.521745 seconds
-Iteration 1 took 237.593095 seconds
-Iteration 2 took 237.556918 seconds
-Iteration 3 took 240.328585 seconds
-Iteration 4 took 240.302712 seconds
-Iteration 5 took 240.407607 seconds
-Iteration 6 took 240.593156 seconds
-Iteration 7 took 238.517556 seconds
-Iteration 8 took 238.623524 seconds
-Iteration 9 took 242.670324 seconds
-Average time: 239.311522
+--------------------------------------------------------------------------------------------
