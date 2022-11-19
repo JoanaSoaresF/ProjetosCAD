@@ -170,9 +170,10 @@ int main()
            "\tNumber of steps: %d\n "
            "\tOutput: %d steps\n"
            "CUDA PARAMETERS:\n"
+           "\tThread size (number of elements processed by thead): %d\n"
            "\tThreads Per Block: %d x %d\n"
            "\tBlocks: %d x %d \n\n",
-           VERSION, nx, ny, h, a, numSteps, outputEvery, threadsPerBlock.x, threadsPerBlock.y, numBlocks.x, numBlocks.y);
+           VERSION, nx, ny, h, a, numSteps, outputEvery, threadSize, threadsPerBlock.x, threadsPerBlock.y, numBlocks.x, numBlocks.y);
 
     double totalTime = 0;
     for (int i = 0; i < NUM_ITERATIONS; i++)

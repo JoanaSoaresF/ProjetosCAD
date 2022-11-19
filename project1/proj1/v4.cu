@@ -160,10 +160,11 @@ int main()
     // Allocate two sets of data for current and next timesteps
 
     dim3 threadsPerBlock(BLOCK_SIZE, BLOCK_SIZE);
-    int numBlocks = streamSize / BLOCK_SIZE;
+    dim3 numBlocks(nx / threadsPerBlock.x + 1, ny / threadsPerBlock.y + 1);
+    int numBlocksStream = streamSize / BLOCK_SIZE;
 
     printf("--------------------------------------------------------------------------------------------\n");
-    printf("VERSION: %s \n"
+ printf("VERSION: %s \n"
            "GENERAL PROBLEM:\n"
            "\tGrid: %d x %d\n"
            "\tGrid spacing(h): %f\n"
@@ -172,11 +173,12 @@ int main()
            "\tOutput: %d steps\n"
            "CUDA PARAMETERS:\n"
            "\tThreads Per Block: %d x %d\n"
-           "\tBlocks: %d\n\n"
+           "\tBlocks: %d x %d\n"
            "STREAMS:\n"
            "\tNumber of streams: %d x %d\n"
-           "\tStream Size: %d\n\n",
-           VERSION, nx, ny, h, a, numSteps, outputEvery, threadsPerBlock.x, threadsPerBlock.y, numBlocks, STREAMCOUNT_X, STREAMCOUNT_Y, streamSize);
+           "\tStream Size: %d\n"
+           "\tBlock size with stream: %d \n\n",
+           VERSION, nx, ny, h, a, numSteps, outputEvery, threadsPerBlock.x, threadsPerBlock.y, numBlocks.x, numBlocks.y, STREAMCOUNT_X, STREAMCOUNT_Y, streamSize, numBlocksStream);
 
     double totalTime = 0;
     for (int i = 0; i < NUM_ITERATIONS; i++)
@@ -202,7 +204,6 @@ int main()
         int offsetX = 0;
         int offsetY = 0;
         cudaStream_t *streams = (cudaStream_t *)malloc(STREAMCOUNT_X * STREAMCOUNT_Y * sizeof(cudaStream_t));
-        //FIXME algo está muito errado! Tempo demasiado rápido, output mal. Acho que o problema é no número de blocos!
 
         for (int s = 0; s < STREAMCOUNT_X * STREAMCOUNT_Y; s++)
         {
@@ -235,7 +236,7 @@ int main()
                     cudaMemcpyAsync(&d_Tn[offset], &h_Tn[offset], (streamSizeX) * sizeof(float), cudaMemcpyHostToDevice, streams[streamNr]);
                     cudaMemcpyAsync(&d_Tnp1[offset], &h_Tnp1[offset], (streamSizeX) * sizeof(float), cudaMemcpyHostToDevice, streams[streamNr]);
                 }
-                evolve_kernel<<<numBlocks, threadsPerBlock, 0, streams[i]>>>(offsetX, offsetY, d_Tn, d_Tnp1, nx, ny, a, h2, dt);
+                evolve_kernel<<<numBlocksStream, threadsPerBlock, 0, streams[streamNr]>>>(offsetX, offsetY, d_Tn, d_Tnp1, nx, ny, a, h2, dt);
             }
         }
         // cudaMemcpy(d_Tn, h_Tn, numElements * sizeof(float), cudaMemcpyHostToDevice);

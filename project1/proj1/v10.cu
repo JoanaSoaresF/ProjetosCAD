@@ -110,13 +110,14 @@ __global__ void evolve_kernel(const float *Tn, float *Tnp1, const int nx, const 
 
     // Make sure all the data is loaded before computing
     __syncthreads();
-    
+
     if (i > 0 && i < nx - 1)
     {
         int j = threadIdx.y + blockIdx.y * blockDim.y;
         if (j > 0 && j < ny - 1)
         {
-            for(int n = 1; n<=nelem; n++) {
+            for (int n = 1; n <= nelem; n++)
+            {
                 const int index = getIndex(n + i, j, ny);
                 float tij = Tn[index];
                 float tim1j = Tn[getIndex(n + i - 1, j, ny)];
@@ -141,8 +142,8 @@ int main()
     const int ny = 200;             // Height of the area
     const float a = 0.5;            // Diffusion constant
     const float h = 0.005;          // h=dx=dy  grid spacing
-    const int numSteps = 100000;     // Number of time steps to simulate (time=numSteps*dt)
-    const int outputEvery = 100000;  // How frequently to write output image
+    const int numSteps = 100000;    // Number of time steps to simulate (time=numSteps*dt)
+    const int outputEvery = 100000; // How frequently to write output image
 
     const float h2 = h * h;
 
@@ -151,7 +152,7 @@ int main()
     int numElements = nx * ny;
     // Allocate two sets of data for current and next timesteps
 
-    //QUESTION ??? Change size
+    // QUESTION ??? Change size
     int threadSize = nx / 20;
     dim3 threadsPerBlock(nx / threadSize, BLOCK_SIZE * BLOCK_SIZE / (nx / threadSize));
     dim3 numBlocks(nx / threadsPerBlock.x + 1, ny / threadsPerBlock.y + 1);
@@ -165,9 +166,10 @@ int main()
            "\tNumber of steps: %d\n "
            "\tOutput: %d steps\n"
            "CUDA PARAMETERS:\n"
+           "\tThread size (number of elements processed by thead): %d\n"
            "\tThreads Per Block: %d x %d\n"
            "\tBlocks: %d x %d \n\n",
-           VERSION, nx, ny, h, a, numSteps, outputEvery, threadsPerBlock.x, threadsPerBlock.y, numBlocks.x, numBlocks.y);
+           VERSION, nx, ny, h, a, numSteps, outputEvery, threadSize, threadsPerBlock.x, threadsPerBlock.y, numBlocks.x, numBlocks.y);
 
     double totalTime = 0;
     for (int i = 0; i < NUM_ITERATIONS; i++)

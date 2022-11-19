@@ -152,19 +152,14 @@ This version had an average execution time of 2.206946 seconds, which doesn't sh
 After analyzing our version with shared memory we focused decided to add streams to this version despite not expecting any big improvement when working with a small grid.
 
 Our implementation adds streams that allow the device to run as soon as the first partition of our table is downloaded. Since our function works with smaller squares we have a two-dimension cycle in order to copy the necessary data.
-% FIXME há algo de muito errado com esta versão!! Output mal e tempo demasiado rápido
 
-% TODO atualizar valores
-We were already expecting the results we got, an average execution time of 2.230349 seconds when using 16 streams (4*4). Even if it is worse than our previous time, it's to be expected because our grid is too small. The majority of the time is spent on the execution of steps, so, the time saved in execution doesn't balance the time lost with the creation and initialization of streams.
+We were already expecting the results we got, an average execution time of 2.203838 seconds when using 16 streams (4*4). Even if it is worse than our previous time, it's to be expected because our grid is too small. The majority of the time is spent on the execution of steps, so, the time saved in execution doesn't balance the time lost with the creation and initialization of streams.
 
 
 
 
 \subsection{V6 Version - Streams to copy output}
 % V6 comment
-% TODO Avabar V6
-
-
 We expect streams to prove advantageous when we want the output in intermediate steps, allowing the communication to overlap with the computation of the next step. To perform this analysis we compare the V2 and V6 versions, varying the parameter \texttt{outputEvery} to values of 1000, 100, 10, and 1.
 
 For larger values of \texttt{outputEvery}, we cannot see significant differences revealing that the costs required for synchronization are not balanced by the overlap of communication with synchronization. But with lower values, we have begun to see the advantages in the use of streams. We can see the results in \autoref{fig:v2andv6OutputSteps}.
@@ -209,7 +204,7 @@ With the results on every step is where we see the better improvement allowed by
 
 Another situation in that streams may be helpful is when we have a larger amount of data to transfer between the host and the device. To prove this hypothesis we vary the grid size and compare the different versions, showing the results in \autoref{fig:v2andv6Grid}.
 
-As we can see the use of streams does not appear to improve the performance when using larger data sets.
+As we can see the use of streams does not appear to improve the performance when using larger data sets. This may be because the communication time is greater than the execution time of each kernel.
 
 
 \begin{figure}[ht]

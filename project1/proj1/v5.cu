@@ -13,6 +13,7 @@
 #ifdef PNG
 #include "pngwriter.h"
 #endif
+// TODO run
 
 #define NUM_ITERATIONS 10
 #define BLOCK_SIZE 16
@@ -127,9 +128,9 @@ int main()
     // Allocate two sets of data for current and next timesteps
 
     dim3 threadsPerBlock(BLOCK_SIZE, BLOCK_SIZE);
-    int numBlocks = streamSize / BLOCK_SIZE;
+    dim3 numBlocks(nx / threadsPerBlock.x + 1, ny / threadsPerBlock.y + 1);
+    int numBlocksStream = streamSize / BLOCK_SIZE;
 
-    // FIXME mesmo problema que a versão 4
     printf("--------------------------------------------------------------------------------------------\n");
     printf("VERSION: %s \n"
            "GENERAL PROBLEM:\n"
@@ -140,11 +141,12 @@ int main()
            "\tOutput: %d steps\n"
            "CUDA PARAMETERS:\n"
            "\tThreads Per Block: %d x %d\n"
-           "\tBlocks: %d\n\n"
+           "\tBlocks: %d x %d\n"
            "STREAMS:\n"
            "\tNumber of streams: %d x %d\n"
-           "\tStream Size: %d\n\n",
-           VERSION, nx, ny, h, a, numSteps, outputEvery, threadsPerBlock.x, threadsPerBlock.y, numBlocks, STREAMCOUNT_X, STREAMCOUNT_Y, streamSize);
+           "\tStream Size: %d\n"
+           "\tBlock size with stream: %d\n\n",
+           VERSION, nx, ny, h, a, numSteps, outputEvery, threadsPerBlock.x, threadsPerBlock.y, numBlocks.x, numBlocks.y, STREAMCOUNT_X, STREAMCOUNT_Y, streamSize, numBlocksStream);
 
     double totalTime = 0;
     for (int i = 0; i < NUM_ITERATIONS; i++)
@@ -203,7 +205,7 @@ int main()
                     cudaMemcpyAsync(&d_Tn[offset], &h_Tn[offset], (streamSizeX) * sizeof(float), cudaMemcpyHostToDevice, streams[streamNr]);
                     cudaMemcpyAsync(&d_Tnp1[offset], &h_Tnp1[offset], (streamSizeX) * sizeof(float), cudaMemcpyHostToDevice, streams[streamNr]);
                 }
-                evolve_kernel<<<numBlocks, threadsPerBlock, 0, streams[i]>>>(offsetX, offsetY, d_Tn, d_Tnp1, nx, ny, a, h2, dt);
+                evolve_kernel<<<numBlocksStream, threadsPerBlock, 0, streams[streamNr]>>>(offsetX, offsetY, d_Tn, d_Tnp1, nx, ny, a, h2, dt);
             }
         }
 
@@ -227,11 +229,6 @@ int main()
             {
                 cudaMemcpy(h_Tn, d_Tn, numElements * sizeof(float), cudaMemcpyDeviceToHost);
                 cudaMemcpy(h_Tnp1, d_Tnp1, numElements * sizeof(float), cudaMemcpyDeviceToHost);
-                if (errorCode != cudaSuccess)
-                {
-                    printf("Cuda error %d: %s\n", errorCode, cudaGetErrorString(errorCode));
-                    exit(0);
-                }
                 writeTemp(h_Tnp1, nx, ny, n + 1);
             }
 
