@@ -251,7 +251,7 @@ In V7 and V8 we took the first version and developed these versions under the as
 
 To achieve improvements relative to V1 we propose the use of streams. The idea of the two versions is to test the different ways of launching the kernel and the streams, as shown in CUDA documentation, and understand how that impacts the performance.\cite{HowOverlapData2012}
 
-However, we have not been successful in developing these versions, and some errors cause longer execution times and erroneous results. Due to this fact, this version will be excluded from our analyses.
+However, we have not been successful in developing these versions, and some errors cause longer execution times and erroneous results. Due to this fact, these versions will be excluded from our analyses.
 
 
 \subsection{V9 Version - More Work per Thread}
@@ -263,7 +263,7 @@ Our first attempt was to adapt each thread to process one line of values. This e
 What we did after this was precisely to work our \texttt{threadSize}, the number of elements that our thread would process.
 
 
-\subsection{V10 Version - More Work p/ Thread w/ Shared Memory}
+\subsection{V10 Version - More Work per Thread with Shared Memory}
 
 Finally, our last implementation was to make use of shared memory together with the V9 implementation to make use of the great search speeds when searching a bigger number of values, since starting this memory was also quite a heavy task. This way we were expecting quite an improvement when compared to V9.
 
