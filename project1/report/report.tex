@@ -159,7 +159,9 @@ We were already expecting the results we got, an average execution time of 2.203
 
 \subsection{V5 Version - Streams}
 After V4 we already knew that since we weren't solving any of the major issues listed earlier we would get similar results, however, for the sake of verifying our expectations, we decided that the work implementing the same stream system as before but without the shared memory could be justified.
-% TODO relatar tempo de execução V5
+
+This version was executed in \texttt{node17} and had an average execution time of 3.369381 seconds not showing any improvements when compared in the V2, that when executed in the same node had an average execution time of 3.355694 seconds.
+
 In conclusion, we confirmed our predictions without any improvements whatsoever.
 
 
@@ -221,7 +223,7 @@ As we can see the use of streams does not appear to improve the performance when
         legend style={at={(0.5,-0.25)},
             anchor=north,legend columns=-1},
         ylabel={Execution time (seconds)},
-        xlabel={Number of steps between output},
+        xlabel={Size of the input grid},
         symbolic x coords={200x200, 400x400, 800x800, 1600x1600},
         xtick=data,
         bar width = 17pt,
@@ -254,18 +256,17 @@ To achieve improvements relative to V1 we propose the use of streams. The idea o
 However, we have not been successful in developing these versions, and some errors cause longer execution times and erroneous results. Due to this fact, these versions will be excluded from our analyses.
 
 
-\subsection{V9 Version - More Work per Thread}
-Being a bit more creative in our approach we decided to have a different evaluation process. In this version, we went back to our V2 and changed it for each thread to process more than a single point of the table.
+\subsection{V9 and V10 Versions - More Work per Thread}
+Being a bit more creative in our approach for version V9, we decided to have a different evaluation process. In this version, we went back to our V2 and changed it for each thread to process more than a single point of the table. V10 was supposed to do the same as V9 but with the help of shared memory.
+
+The idea was to see if increasing the amount of work and consequently, memory access, makes the use of shared memory justified by improving performance.
+
+Unfortunately, we ran into illegal memory access and we didn't have time to correct our implementations, so we don't have results for these versions.
 
 % TODO atualizar tempo
-Our first attempt was to adapt each thread to process one line of values. This experiment turned out to be a horrible solution with 250+ seconds of execution in the same conditions as the cases above, but as we said this was only the first attempt. The result was surprising because we weren't expecting such a high value but we were it's understandable since we are overworking our threads, with 256 threads per block and 200 lines to process we were making a step work in less than one block, far from maximizing the use of our GPU.
+% Our first attempt was to adapt each thread to process one line of values. This experiment turned out to be a horrible solution with 350+ seconds of execution in the same conditions as the cases above, but as we said this was only the first attempt. The result was surprising because we weren't expecting such a high value but we were it's understandable since we are overworking our threads, with 256 threads per block and 200 lines to process we were making a step work in less than one block, far from maximizing the use of our GPU.
 
-What we did after this was precisely to work our \texttt{threadSize}, the number of elements that our thread would process.
-
-
-\subsection{V10 Version - More Work per Thread with Shared Memory}
-
-Finally, our last implementation was to make use of shared memory together with the V9 implementation to make use of the great search speeds when searching a bigger number of values, since starting this memory was also quite a heavy task. This way we were expecting quite an improvement when compared to V9.
+% Finally, our last implementation was to make use of shared memory together with the V9 implementation to make use of the great search speeds when searching a bigger number of values, since starting this memory was also quite a heavy task. This way we were expecting quite an improvement when compared to V9.
 
 % TODO acabar
 
@@ -274,59 +275,58 @@ Finally, our last implementation was to make use of shared memory together with 
 Throw this report is analyzed many different implementations of the heat equation taking advantage of the GPU.
 
 In \autoref{fig:executionTimeCompare} we can see the execution times of our versions using the same parameters.
+Due to a change in the method of measuring execution time and a problem in \texttt{node14} of the DI cluster, it was not possible to run all the versions in the same node. Versions V5, V9 and V10 were only executed in \texttt{node17}. To better compare the versions we rerun V2 in this node and we show the results of the different versions executed in \texttt{node17} in \autoref{fig:executionTimeCompareNode17}
 
 % TODO atualizar valores
 \begin{figure}[ht]
   \centering
-  \begin{subfigure}[b]{0.24\textwidth}
-\resizebox{\textwidth}{!}{% 
-\begin{tikzpicture}
-        \begin{axis}[
-            ylabel={Execution time (seconds)},
-            xlabel={Version},
-            symbolic x coords={Sequential, V1, V2},
-            xtick=data,
-nodes near coords={
-\pgfmathprintnumber[precision=1]{\pgfplotspointmeta}
-},
-          ]
-          \addplot[ybar,fill=blue] coordinates {
-              (Sequential,   153.979491)
-(V1,  36.295435)
-(V2,   2.172697)
-            };
-        \end{axis}
-      \end{tikzpicture}
-    }%
-    \caption{Execution time of sequential version, V1, and V2}
-    \label{fig:executionTimeCompareA}
-  \end{subfigure}
-  \begin{subfigure}[b]{0.24\textwidth}
-    \resizebox{\textwidth}{!}{%
-      \begin{tikzpicture}
+\begin{subfigure}[b]{\columnwidth}
 
-        \begin{axis}[
-            ylabel={Execution time (seconds)},
-            xlabel={Version},
-symbolic x coords={V2, V3, V4, V5, V9, V10},
+\begin{tikzpicture}
+\begin{axis}[
+ylabel={Execution time (seconds)},
+xlabel={Version},
+symbolic x coords={Sequential, V1, V2, V3, V4},
 xtick=data,
 nodes near coords={
     \pgfmathprintnumber[precision=1]{\pgfplotspointmeta}
   },
-          ]
-          \addplot[ybar,fill=blue] coordinates {
+]
+\addplot[ybar,fill=blue] coordinates {
+(Sequential,   153.979491)
+(V1,  36.295435)
 (V2,   2.172697)
 (V3,   2.206946)
 (V4,   2.203838)
-(V5,   0)
+};
+\end{axis}
+\end{tikzpicture}
+
+\caption{Execution times of sequential version, V1, V1, V3 and V4 in \texttt{node14}}
+\label{fig:executionTimeCompareNode14}
+  \end{subfigure}
+\begin{subfigure}[b]{\columnwidth}
+\begin{tikzpicture}
+
+\begin{axis}[
+ylabel={Execution time (seconds)},
+xlabel={Version},
+symbolic x coords={V2, V5, V9, V10},
+xtick=data,
+nodes near coords={
+    \pgfmathprintnumber[precision=1]{\pgfplotspointmeta}
+  },
+]
+\addplot[ybar,fill=blue] coordinates {
+(V2,   3.355694)
+(V5,   3.369381)
 (V9,   0)
 (V10,   0)
-            };
-        \end{axis}
-      \end{tikzpicture}
-    }%
-\caption{Execution time of V2, V3, V4, V5, V9 and V10}
-    \label{fig:executionTimeCompareB}
+};
+\end{axis}
+\end{tikzpicture}
+\caption{Execution times of V2, V5, V9 and V10 in  \texttt{node17}}
+\label{fig:executionTimeCompareNode17}
 \end{subfigure}
   \caption{Execution time of the different versions}
   \label{fig:executionTimeCompare}
@@ -334,7 +334,10 @@ nodes near coords={
 
 With this report, we could see how many strategies influence the performance of a problem and understand that not all solutions are fit for all problems. High-performance computing requires careful analyses of the problem size, structure, and requirements to find the best strategy to parallelize it.
 
-In this problem, and with our implementation we didn't find any advantage in the usage of streams or shared memory, this may due to the fact that the extra work necessary to launch these versions is not compensated by the performance gains. So to this problem we considered V2 as the best version and that version can be compiled with the following command, from inside the folder \texttt{/proj1}:
+In this problem, and with our implementation we didn't find any advantage in the usage of streams or shared memory, this may due to the fact that the extra work necessary to launch these versions is not compensated by the performance gains. So to this problem, we considered V2 as the best version.
+
+\section{Compilation and Execution Instructions}
+Our best version, V2, can be compiled with the following command, from inside the folder \texttt{/proj1}:
 \begin{verbatim}
 nvcc -o v2 v2.cu && ./v2
 \end{verbatim}
