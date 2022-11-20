@@ -148,14 +148,18 @@ In this version, we take advantage of the shared memory between threads of the s
 
 This version had an average execution time of 2.206946 seconds, which doesn't show any improvement from the previous version. This may be because of the overhead introduced by copying each element and the threads' synchronization is not balanced by faster access to the shared memory.
 
+
 \subsection{V4 Version - Streams with shared memory}
-After analyzing our version with shared memory we focused decided to add streams to this version despite not expecting any big improvement when working with a small grid.
+After analyzing our version with shared memory we decided to add streams to this version despite not expecting any big improvement when working with a small grid.
 
 Our implementation adds streams that allow the device to run as soon as the first partition of our table is downloaded. Since our function works with smaller squares we have a two-dimension cycle in order to copy the necessary data.
 
-We were already expecting the results we got, an average execution time of 2.203838 seconds when using 16 streams (4*4). Even if it is worse than our previous time, it's to be expected because our grid is too small. The majority of the time is spent on the execution of steps, so, the time saved in execution doesn't balance the time lost with the creation and initialization of streams.
+We were already expecting the results we got, an average execution time of 2.203838 seconds when using 16 streams (4*4). Even if it is worse than our previous time, it's to be expected because of a few factors between which the biggest is that the majority of the time is spent on the execution of steps, so, the time saved in the execution of the first step e relatively small.
 
 
+\subsection{V5 Version - Streams}
+After V4 we already knew that since we weren't solving any of the major issues listed earlier we would get similar results, however, for the sake of verifying our expectations, we decided that the work implementing the same stream system as before but without the shared memory could be justified.
+In conclusion, we confirmed our previsions without any improvements whatsoever.
 
 
 \subsection{V6 Version - Streams to copy output}
@@ -293,6 +297,18 @@ As we can see the use of streams does not appear to improve the performance when
 \end{figure}
 
 
+
+\subsection{V9 Version - More Work p/ Thread}
+Being a bit more creative in our approach we decided to have a different evaluation process. In this version, we went back to our V2 and changed it in order for each thread to process more than a single point of the table.
+
+Our first attempt was to adapt each thread to process one line of values. This experiment turned out to be a horrible solution with 250+ seconds of execution in the same conditions as the cases above, but as we said this was only the first attempt. The result was surprising because we weren't expecting such a high value but we were basically overworking our threads, with 256 threads per block and 200 lines to process we were making a step work in "less" than one block, far from maximizing the use of our GPU.
+
+What we did after this was precisely to work our texttt{threadSize}, the number of elements that our thread would process. 
+
+
+\subsection{V10 Version - More Work p/ Thread w/ Shared Memory}
+
+Finally, our last implementation was to make use of shared memory together with the V9 implementation to make use of the great search speeds when searching a bigger number of values, since starting this memory was also quite a heavy task. This way we were expecting quite an improvement when compared to V9.
 
 
 
