@@ -93,42 +93,6 @@ __global__ void evolve_kernel(const float *Tn, float *Tnp1, const int nx, const 
 
                 Tnp1[index] = tij + a * dt * ((tim1j + tip1j + tijm1 + tijp1 - 4.0 * tij) / h2);
             }
-            // float *up = (float *)malloc((nelem+2) * sizeof(float));
-            // float *sol = (float *)malloc((nelem+2) * sizeof(float));
-            // float *down = (float *)malloc((nelem+2) * sizeof(float));
-
-            // up[0] = Tn[getIndex(i-1, j+1, ny)];
-            // up[1] = Tn[getIndex(i, j+1, ny)];
-            // sol[0] = Tn[getIndex(i-1, j, ny)];
-            // sol[1] = Tn[getIndex(i, j, ny)];
-            // down[0] = Tn[getIndex(i-1, j-1, ny)];
-            // down[1] = Tn[getIndex(i, j-1, ny)];
-
-            // int index;
-            // for(int n = 1; n<=nelem; n++) {
-
-            //     up[n] = Tn[getIndex(i+n, j+1, ny)];
-            //     sol[n] = Tn[getIndex(i+n, j, ny)];
-            //     down[n] = Tn[getIndex(i+n, j-1, ny)];
-
-            //     float tij = sol[n];
-            //     float tim1j = sol[n-1];
-            //     float tijm1 = down[n];
-            //     float tip1j = sol[n+1];
-            //     float tijp1 = up[n];
-
-            //     index = getIndex(i+n-1, j, ny);
-            //     Tnp1[index] = tij + a * dt * ((tim1j + tip1j + tijm1 + tijp1 - 4.0 * tij) / h2);
-            // }
-            // const int index = getIndex(i, j, ny);
-            // float tij = Tn[index];
-            // float tim1j = Tn[getIndex(i - 1, j, ny)];
-            // float tijm1 = Tn[getIndex(i, j - 1, ny)];
-            // float tip1j = Tn[getIndex(i + 1, j, ny)];
-            // float tijp1 = Tn[getIndex(i, j + 1, ny)];
-
-            // Explicit scheme
-            // Tnp1[index] = tij + a * dt * ((tim1j + tip1j + tijm1 + tijp1 - 4.0 * tij) / h2);
         }
     }
 }
@@ -154,12 +118,9 @@ int main()
     int numElements = nx * ny;
     // Allocate two sets of data for current and next timesteps
 
-    // QUESTION ???
     int threadSize = nx;
     dim3 threadsPerBlock(1, BLOCK_SIZE * BLOCK_SIZE);
     dim3 numBlocks(nx / threadsPerBlock.x + 1, ny / threadsPerBlock.y + 1);
-    // dim3 threadsPerBlock(BLOCK_SIZE	, BLOCK_SIZE);
-    // dim3 numBlocks(nx / threadsPerBlock.x + 1, ny / threadsPerBlock.y + 1);
 
     printf("--------------------------------------------------------------------------------------------\n");
     printf("VERSION: %s \n"
@@ -197,7 +158,6 @@ int main()
         writeTemp(h_Tn, nx, ny, 0);
 
         // Timing
-        // clock_t start = clock();
         struct timespec start, finish;
         clock_gettime(CLOCK_MONOTONIC, &start);
 
@@ -231,8 +191,6 @@ int main()
         }
 
         // Timing
-        // clock_t finish = clock();
-        // double time = (double)(finish - start) / CLOCKS_PER_SEC;
         clock_gettime(CLOCK_MONOTONIC, &finish);
         double time = timedif(&finish, &start);
         totalTime += time;

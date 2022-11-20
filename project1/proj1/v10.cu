@@ -152,7 +152,6 @@ int main()
     int numElements = nx * ny;
     // Allocate two sets of data for current and next timesteps
 
-    // QUESTION ??? Change size
     int threadSize = nx / 20;
     dim3 threadsPerBlock(nx / threadSize, BLOCK_SIZE * BLOCK_SIZE / (nx / threadSize));
     dim3 numBlocks(nx / threadsPerBlock.x + 1, ny / threadsPerBlock.y + 1);
@@ -193,7 +192,6 @@ int main()
         writeTemp(h_Tn, nx, ny, 0);
 
         // Timing
-        // clock_t start = clock();
         struct timespec start, finish;
         clock_gettime(CLOCK_MONOTONIC, &start);
 

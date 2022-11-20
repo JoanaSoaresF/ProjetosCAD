@@ -219,29 +219,7 @@ int main()
                     evolve_kernel<<<streamSize / BLOCK_SIZE, threadsPerBlock, 0, stream[streamNr]>>>(offsetX, offsetY, d_Tn, d_Tnp1, nx, ny, a, h2, dt);
                 }
             }
-            // Copy Tn+1 to host
-            // for (int ystream = 0; ystream < STREAMCOUNT_Y; ystream++)
-            // {
-            //     offsetY = ystream * streamSizeY;
 
-            //     for (int xstream = 0; xstream < STREAMCOUNT_X; xstream++)
-            //     {
-            //         offsetX = xstream * streamSizeX;
-
-            //         int streamNr = ystream * STREAMCOUNT_X + xstream;
-
-            //         for (int cy = 0; cy < streamSizeY + 2; cy++)
-            //         {
-            //             offset = offsetY * nx + offsetX;
-
-            //             cudaMemcpyAsync(&h_Tn[offset], &d_Tn[offset],
-            //                             streamSizeX * sizeof(float), cudaMemcpyDeviceToHost,
-            //                             stream[streamNr]);
-            //             cudaMemcpyAsync(&d_Tnp1[offset], &h_Tnp1[offset], streamSizeX * sizeof(float), cudaMemcpyDeviceToHost,
-            //                             streamRecive[streamNr]);
-            //         }
-            //     }
-            // }
             cudaDeviceSynchronize();
 
             cudaMemcpy(h_Tn, d_Tn, numElements * sizeof(float), cudaMemcpyDeviceToHost);
@@ -266,9 +244,7 @@ int main()
         }
 
         // Timing
-        // clock_t finish = clock();
-        // double time = (double)(finish - start) / CLOCKS_PER_SEC;
-        // totalTime += time;
+
         clock_gettime(CLOCK_MONOTONIC, &finish);
         double time = timedif(&finish, &start);
         printf("Iteration %d took %f seconds\n", i, time);

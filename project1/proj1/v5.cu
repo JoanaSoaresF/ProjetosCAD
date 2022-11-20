@@ -164,8 +164,6 @@ int main()
         float *d_Tnp1;
         cudaMalloc((void **)&d_Tn, numElements * sizeof(float));
         cudaMalloc((void **)&d_Tnp1, numElements * sizeof(float));
-        // cudaMemcpy(d_Tn, h_Tn, numElements * sizeof(float), cudaMemcpyHostToDevice);
-        // cudaMemcpy(d_Tnp1, h_Tnp1, numElements * sizeof(float), cudaMemcpyHostToDevice);
 
         writeTemp(h_Tn, nx, ny, 0);
 
@@ -199,9 +197,6 @@ int main()
                 {
                     offset = offsetY * nx + offsetX;
 
-                    // cudaStreamCreate(&streams[streamNr]);
-
-                    // printf("Copying to gpu streamX: %d \n" + xstream);
                     cudaMemcpyAsync(&d_Tn[offset], &h_Tn[offset], (streamSizeX) * sizeof(float), cudaMemcpyHostToDevice, streams[streamNr]);
                     cudaMemcpyAsync(&d_Tnp1[offset], &h_Tnp1[offset], (streamSizeX) * sizeof(float), cudaMemcpyHostToDevice, streams[streamNr]);
                 }
@@ -239,8 +234,6 @@ int main()
         }
 
         // Timing
-        // clock_t finish = clock();
-        // double time = (double)(finish - start) / CLOCKS_PER_SEC;
         clock_gettime(CLOCK_MONOTONIC, &finish);
         double time = timedif(&finish, &start);
         totalTime += time;

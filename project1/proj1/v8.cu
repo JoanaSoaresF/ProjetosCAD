@@ -163,7 +163,6 @@ int main()
         //    Create streams
         int nStreams = STREAMCOUNT_X * STREAMCOUNT_Y;
         cudaStream_t *stream = (cudaStream_t *)malloc(nStreams * sizeof(cudaStream_t));
-        // cudaStream_t streamRecive[nStreams];
 
         for (int s = 0; s < nStreams; s++)
         {
@@ -171,7 +170,6 @@ int main()
         }
 
         // Timing
-        // clock_t start = clock();
         struct timespec start, finish;
         clock_gettime(CLOCK_MONOTONIC, &start);
 
@@ -195,9 +193,6 @@ int main()
                     {
                         offset = offsetY * nx + offsetX;
 
-                        // cudaStreamCreate(&streams[streamNr]);
-
-                        // printf("Copying to gpu streamX: %d \n" + xstream);
                         cudaMemcpyAsync(&d_Tn[offset], &h_Tn[offset], (streamSizeX) * sizeof(float), cudaMemcpyHostToDevice, stream[streamNr]);
                         cudaMemcpyAsync(&d_Tnp1[offset], &h_Tnp1[offset], (streamSizeX) * sizeof(float), cudaMemcpyHostToDevice, stream[streamNr]);
                     }

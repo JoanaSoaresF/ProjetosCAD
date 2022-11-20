@@ -164,7 +164,7 @@ int main()
     int numBlocksStream = streamSize / BLOCK_SIZE;
 
     printf("--------------------------------------------------------------------------------------------\n");
- printf("VERSION: %s \n"
+    printf("VERSION: %s \n"
            "GENERAL PROBLEM:\n"
            "\tGrid: %d x %d\n"
            "\tGrid spacing(h): %f\n"
@@ -229,18 +229,12 @@ int main()
                 {
                     offset = offsetY * nx + offsetX;
 
-                    // printf("creating stream: ", streamNr);
-                    // cudaStreamCreate(&streams[streamNr]);
-
-                    // printf("Copying to gpu streamX: %d \n" + xstream);
                     cudaMemcpyAsync(&d_Tn[offset], &h_Tn[offset], (streamSizeX) * sizeof(float), cudaMemcpyHostToDevice, streams[streamNr]);
                     cudaMemcpyAsync(&d_Tnp1[offset], &h_Tnp1[offset], (streamSizeX) * sizeof(float), cudaMemcpyHostToDevice, streams[streamNr]);
                 }
                 evolve_kernel<<<numBlocksStream, threadsPerBlock, 0, streams[streamNr]>>>(offsetX, offsetY, d_Tn, d_Tnp1, nx, ny, a, h2, dt);
             }
         }
-        // cudaMemcpy(d_Tn, h_Tn, numElements * sizeof(float), cudaMemcpyHostToDevice);
-        // cudaMemcpy(d_Tnp1, h_Tnp1, numElements * sizeof(float), cudaMemcpyHostToDevice);
 
         // Main loop
         for (int n = 1; n <= numSteps; n++) // Streams 0 ->> 1
@@ -271,8 +265,6 @@ int main()
         }
 
         // Timing
-        // clock_t finish = clock();
-        // double time = (double)(finish - start) / CLOCKS_PER_SEC;
         clock_gettime(CLOCK_MONOTONIC, &finish);
         double time = timedif(&finish, &start);
         totalTime += time;
