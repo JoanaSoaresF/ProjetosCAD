@@ -1,0 +1,62 @@
+\documentclass[conference]{IEEEtran}
+
+\usepackage{listings}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.6}
+\usepackage{hyperref}
+\usepackage{caption}
+\usepackage{subcaption}
+
+\usepackage[
+  backend=biber,
+  style=ieee,
+  sorting=none
+]{biblatex}
+\addbibresource{CAD.bib}
+
+\lstset{basicstyle=\footnotesize\ttfamily,
+  breaklines=true}
+
+
+
+
+\begin{document}
+
+\title{Performance enhancement using MPI in a simulation of heat diffusion}
+
+\author{
+  \IEEEauthorblockN{Gonçalo Lourenço \\ nº55780 \\ gm.lourenco@campus.fct.unl.pt}
+  \and
+  \IEEEauthorblockN{Joana Faria \\ nº55754 \\ js.faria@campus.fct.unl.pt}
+}
+
+\maketitle
+
+
+
+\section{Introduction}
+This assignment aims to optimize a base code, written in \texttt{C}, that computes a simulation for heat diffusion. For the optimization, we seek to take advantage of GPU programming using \texttt{CUDA}, and explore several alternatives to find the most efficient one.
+
+To find the best performance we will explore different approaches, namely analyzing different configurations, exploring the impact of using shared memory, and the difference between using streams or not.
+
+Knowing that the architecture of the system influences the performance obtained, the first step of our work is to understand the architecture of the system where our program will run. So we present the characteristics below:
+
+
+\section{Results}
+
+
+\section{Discussion}
+
+
+\section{Compilation and Execution Instructions}
+Our best version, V2, can be compiled and executed with the following command, from inside the folder \texttt{/proj1}:
+\begin{verbatim}
+nvcc -o v2 v2.cu && ./v2
+\end{verbatim}
+This will execute ten iterations to measure the average execution times and the results of the heat equation will be saved in the folder \texttt{images/v2}.
+
+
+\printbibliography
+
+
+\end{document}
