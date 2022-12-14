@@ -10,8 +10,7 @@
 
 #define VERSION "V1"
 #define BETWEEN_NEIGHBORS 1
-#define TO_OUTPUT 2
-#define NUM_ITERATIONS 1
+#define TO_OUTPUT 1
 
 /* Convert 2D index layout to unrolled 1D layout
  * \param[in] i      Row index
@@ -76,12 +75,12 @@ double timedif(struct timespec *t, struct timespec *t0)
 
 int main(int argc, char *argv[])
 {
-    const int nx = 200;             // Width of the area
-    const int ny = 200;             // Height of the area
+    const int nx = 32;             // Width of the area
+    const int ny = 32;             // Height of the area
     const float a = 0.5;            // Diffusion constant
     const float h = 0.005;          // h=dx=dy  grid spacing
-    const int numSteps = 100000;    // Number of time steps to simulate (time=numSteps*dt)
-    const int outputEvery = 100000; // How frequently to write output image
+    const int numSteps = 1000;    // Number of time steps to simulate (time=numSteps*dt)
+    const int outputEvery = 1000; // How frequently to write output image
 
     const float h2 = h * h;
 
@@ -105,6 +104,9 @@ int main(int argc, char *argv[])
                "\tOutput: %d steps\n"
                "\tNumber of processes: %d\n",
                VERSION, nx, ny, h, a, numSteps, outputEvery, nproc);
+
+        // Timing
+        start = clock();
     }
 
     // Determine zone assigned to each processor
@@ -136,21 +138,11 @@ int main(int argc, char *argv[])
 
     MPI_Status status;
 
-    // for (int m = 0; m < NUM_ITERATIONS; m++)
-    // {
-    if (process_id == 0)
-    {
-        // Timing
-        start = clock();
-    }
+
 
     // Main loop
     for (int n = 0; n <= numSteps; n++)
     {
-        if (process_id == 0)
-        {
-            // printf("Step %d\n", n);
-        }
         // Going through the entire area for one step
         // (borders stay at the same fixed temperatures)
         for (int i = 1; i <= N; i++)
@@ -170,12 +162,12 @@ int main(int argc, char *argv[])
         }
 
         // send data to neighbor
+
         if (process_id < nproc - 1)
-        { // last processor does not need to share bottom line
+        { // last processor does not need to share intermidiate results
             // need to send my last computed line to the next processor
 
             MPI_Send(&Tnp1[N * ny], ny, MPI_FLOAT, process_id + 1, BETWEEN_NEIGHBORS, MPI_COMM_WORLD);
-            // printf("Node %d sent bottom line\n", process_id);
         }
 
         int previous_process = process_id - 1;
@@ -183,53 +175,36 @@ int main(int argc, char *argv[])
         {
             // need to send my fist computed line to the previous processor
             MPI_Send(&Tnp1[1], ny, MPI_FLOAT, previous_process, BETWEEN_NEIGHBORS, MPI_COMM_WORLD);
-            // printf("Node %d sent top line\n", process_id);
         }
 
         // receive data from neighbor
         if (process_id > 0)
-        { // first process does not receive data from previous neighbor
+        { // fisrt process does not receive data from neighbor
 
             // need to receive data from previous processor
             MPI_Recv(&Tnp1[0], ny, MPI_FLOAT, process_id - 1, BETWEEN_NEIGHBORS, MPI_COMM_WORLD, &status);
-            // printf("Node %d received top line\n", process_id);
         }
 
         // need to receive data from next processor
-        int next_process = process_id + 1;
-        if (next_process < nproc)
+        int next_process = process_id - 1;
+        if (next_process >= 0)
         {
             MPI_Recv(&Tnp1[(N + 1) * ny], ny, MPI_FLOAT, next_process, BETWEEN_NEIGHBORS, MPI_COMM_WORLD, &status);
-            // printf("Node %d received bottom line\n", process_id);
         }
 
         // Write the output if needed
         if ((n + 1) % outputEvery == 0)
         {
 
-            if (process_id == 0)
-            {
-                // centralize all the results
-                float *result = (float *)calloc(nx * ny, sizeof(float));
-                initTemp(result, nx, ny);
-                memcpy(&result[1], &Tnp1[1], N * ny * sizeof(float));
-                for (int i = 1; i < nproc; i++)
-                {
-                    // printf("Receiving from %d\n", i);
-                    // MPI_Request request;
-                    MPI_Recv(&result[i * N * ny], N * ny, MPI_FLOAT, i, TO_OUTPUT, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-                    // printf("Received from %d\n", i);
-                }
+            float *result = (float *)calloc(nx * ny, sizeof(float));
+            
+            MPI_Gather(&Tnp1[1], N * ny, MPI_FLOAT, &result, nx * ny, MPI_FLOAT, 0, MPI_COMM_WORLD);
 
-                writeTemp(result, nx, ny, n + 1);
-                free(result);
-            }
-            else
+            if(process_id == 0)
             {
-                // printf("Process %d sending\n", process_id);
-                // send data to node 0
-                MPI_Send(&Tnp1[1], N * ny, MPI_FLOAT, 0, TO_OUTPUT, MPI_COMM_WORLD);
+                writeTemp(result, nx, ny, n + 1);
             }
+
         }
 
         // Swapping the pointers for the next timestep
@@ -239,19 +214,13 @@ int main(int argc, char *argv[])
     }
 
     // Timing
-
-    if (process_id == 0)
-    {
-        clock_t finish = clock();
-        printf("\nIt took %f seconds\n\n", (double)(finish - start) / CLOCKS_PER_SEC);
-        printf("--------------------------------------------------------------------------------------------\n");
-    }
+    clock_t finish = clock();
+    printf("\nIt took %f seconds\n\n", (double)(finish - start) / CLOCKS_PER_SEC);
+    printf("--------------------------------------------------------------------------------------------\n");
 
     // Release the memory
     free(Tn);
     free(Tnp1);
-    // }
-
     MPI_Finalize();
 
     return 0;
