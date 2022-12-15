@@ -94,13 +94,12 @@ int main(int argc, char *argv[])
     MPI_Comm_size(MPI_COMM_WORLD, &nproc);
     MPI_Comm_rank(MPI_COMM_WORLD, &process_id);
 
-    clock_t start;
-
-    // each process will compute N rows
+        // each process will compute N rows
     int N = (int)ceil((double)nx / (double)nproc);
     // int N = 12;
-    if (process_id == 0)
+    if (process_id == 0 && argc > 1)
     {
+        printf("\n--------------------------------------------------------------\n");
         printf("VERSION: %s \n"
                "GENERAL PROBLEM:\n"
                "\tGrid: %d x %d\n"
@@ -120,7 +119,6 @@ int main(int argc, char *argv[])
     float *Tnp1 = (float *)calloc(numElements, sizeof(float));
 
     // Initializing the data for T0
-    // memset(Tn, 0, sizeof Tn);
     if (process_id == 0)
     {
         initTemp(Tn, N, ny);
@@ -132,8 +130,7 @@ int main(int argc, char *argv[])
 
     MPI_Status status;
 
-    // for (int m = 0; m < NUM_ITERATIONS; m++)
-    // {
+    clock_t start;
     if (process_id == 0)
     {
         // Timing
@@ -192,13 +189,10 @@ int main(int argc, char *argv[])
             {
                 // centralize all the results
                 float *result = (float *)calloc((N + 1) * nproc * ny, sizeof(float));
-                // initTemp(result, nx, ny);
                 memcpy(&result[0], &Tnp1[0], N * ny * sizeof(float));
                 for (int p = 1; p < nproc; p++)
                 {
                     int computed_lines = (p == nproc - 1) ? nx - ((nproc - 1) * N) : N;
-                    int index = p == 1 ? p * (N + 1) * ny : p * N * ny;
-
                     MPI_Recv(&result[p * N * ny], computed_lines * ny, MPI_FLOAT, p, TO_OUTPUT, MPI_COMM_WORLD, &status);
                 }
 
@@ -225,14 +219,12 @@ int main(int argc, char *argv[])
     if (process_id == 0)
     {
         clock_t finish = clock();
-        printf("\nIt took %f seconds\n\n", (double)(finish - start) / CLOCKS_PER_SEC);
-        printf("-----------------------------------------------------------------\n");
+        printf(" %f\n", (double)(finish - start) / CLOCKS_PER_SEC);
     }
 
     // Release the memory
     free(Tn);
     free(Tnp1);
-    // }
 
     MPI_Finalize();
 

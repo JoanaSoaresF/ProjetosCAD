@@ -1,0 +1,104 @@
+VERSION: V1 
+GENERAL PROBLEM:
+	Grid: 200 x 200
+	Grid spacing(h): 0.005000
+	Diffusion constant: 0.500000
+	Number of steps:100000
+	Output: 100000 steps
+	Number of processes: 16
+	Number of lines per process: 13
+V1 took 10.235559 seconds
+V1 took 10.309411 seconds
+V1 took 10.159137 seconds
+V1 took 10.296944 seconds
+V1 took 10.244575 seconds
+V1 took 10.225892 seconds
+V1 took 10.169906 seconds
+V1 took 10.231118 seconds
+V1 took 10.259917 seconds
+V1 took 10.153103 seconds
+
+
+--------------------------------------------------------------
+VERSION: V1 
+GENERAL PROBLEM:
+	Grid: 200 x 200
+	Grid spacing(h): 0.005000
+	Diffusion constant: 0.500000
+	Number of steps:100000
+	Output: 100000 steps
+	Number of processes: 8
+	Number of lines per process: 25
+ 18.857019
+ 18.859089
+ 18.768293
+ 18.745485
+ 18.947195
+ 18.837511
+ 18.756557
+ 18.879413
+ 18.833251
+ 18.842777
+
+--------------------------------------------------------------
+VERSION: V1 
+GENERAL PROBLEM:
+	Grid: 200 x 200
+	Grid spacing(h): 0.005000
+	Diffusion constant: 0.500000
+	Number of steps:100000
+	Output: 100000 steps
+	Number of processes: 1
+	Number of lines per process: 200
+ 144.622700
+ 144.834444
+ 144.652529
+ 144.679220
+ 144.833107
+ 144.729272
+ 144.677495
+ 144.754396
+ 144.669449
+ 144.933240
+
+--------------------------------------------------------------
+VERSION: V1 
+GENERAL PROBLEM:
+	Grid: 200 x 200
+	Grid spacing(h): 0.005000
+	Diffusion constant: 0.500000
+	Number of steps:100000
+	Output: 100000 steps
+	Number of processes: 2
+	Number of lines per process: 100
+ 72.219842
+ 72.268099
+ 72.283549
+ 72.210987
+ 72.189168
+ 72.180043
+ 72.239358
+ 72.284508
+ 72.221325
+ 72.129985
+
+--------------------------------------------------------------
+VERSION: V1 
+GENERAL PROBLEM:
+	Grid: 200 x 200
+	Grid spacing(h): 0.005000
+	Diffusion constant: 0.500000
+	Number of steps:100000
+	Output: 100000 steps
+	Number of processes: 4
+	Number of lines per process: 50
+ 36.898080
+ 37.987649
+ 36.676251
+ 36.778319
+ 36.782227
+ 37.124844
+ 36.631416
+ 36.749647
+ 36.684684
+ 36.892035

@@ -9,7 +9,7 @@
 #include "pngwriter.h"
 #endif
 
-#define VERSION "V2"
+#define VERSION "V3"
 #define BETWEEN_NEIGHBORS 1
 #define TO_OUTPUT 2
 #define NUM_ITERATIONS 1
@@ -81,8 +81,8 @@ int main(int argc, char *argv[])
     const int ny = 200;             // Height of the area
     const float a = 0.5;            // Diffusion constant
     const float h = 0.005;          // h=dx=dy  grid spacing
-    const int numSteps = 100;    // Number of time steps to simulate (time=numSteps*dt)
-    const int outputEvery = 100; // How frequently to write output image
+    const int numSteps = 100000;    // Number of time steps to simulate (time=numSteps*dt)
+    const int outputEvery = 100000; // How frequently to write output image
 
     const float h2 = h * h;
 
@@ -95,8 +95,8 @@ int main(int argc, char *argv[])
     MPI_Comm_rank(MPI_COMM_WORLD, &process_id);
 
     // each process will compute N rows
-    int N = (int)ceil((double)nx / (double)nproc);
-    // int N = 12;
+    int N = (int)ceil((double)nx / (double)(nproc - 1));
+
     if (process_id == 0 && argc > 1)
     {
         printf("\n--------------------------------------------------------------\n");
@@ -119,14 +119,13 @@ int main(int argc, char *argv[])
     float *Tnp1 = (float *)calloc(numElements, sizeof(float));
 
     // Initializing the data for T0
-    if (process_id == 0)
+    if (process_id == 1)
     {
         initTemp(Tn, N, ny);
     }
 
     // Fill in the data on the next step to ensure that the boundaries are identical.
     memcpy(Tnp1, Tn, numElements * sizeof(float));
-    // writeTemp(Tn, N + 2, ny, 0);
 
     MPI_Status status;
 
@@ -138,68 +137,74 @@ int main(int argc, char *argv[])
     }
 
     // Main loop
+
     for (int n = 0; n <= numSteps; n++)
     {
         // Going through the entire area for one step
         // (borders stay at the same fixed temperatures)
 
-        for (int i = 1; i <= N && i + N * process_id < nx - 1; i++)
+        if (process_id > 0)
         {
-            for (int j = 1; j < ny - 1; j++)
+            for (int i = 1; i <= N && i + N * process_id < nx - 1; i++)
             {
-                // compute heat equation
-                const int index = getIndex(i, j, ny);
-                float tij = Tn[index];
-                float tim1j = Tn[getIndex(i - 1, j, ny)];
-                float tijm1 = Tn[getIndex(i, j - 1, ny)];
-                float tip1j = Tn[getIndex(i + 1, j, ny)];
-                float tijp1 = Tn[getIndex(i, j + 1, ny)];
+                for (int j = 1; j < ny - 1; j++)
+                {
+                    // compute heat equation
+                    const int index = getIndex(i, j, ny);
+                    float tij = Tn[index];
+                    float tim1j = Tn[getIndex(i - 1, j, ny)];
+                    float tijm1 = Tn[getIndex(i, j - 1, ny)];
+                    float tip1j = Tn[getIndex(i + 1, j, ny)];
+                    float tijp1 = Tn[getIndex(i, j + 1, ny)];
 
-                Tnp1[index] = tij + a * dt * ((tim1j + tip1j + tijm1 + tijp1 - 4.0 * tij) / h2);
+                    Tnp1[index] = tij + a * dt * ((tim1j + tip1j + tijm1 + tijp1 - 4.0 * tij) / h2);
+                }
             }
-        }
 
-        // SEND data to neighbor
-        if (process_id < nproc - 1) // send bottom line - my last computed line to the next processor
-        {                           // last processor does not need to share bottom line
-            MPI_Send(&Tnp1[N * ny], ny, MPI_FLOAT, process_id + 1, BETWEEN_NEIGHBORS, MPI_COMM_WORLD);
-        }
+            // SEND data to neighbor
+            if (process_id < nproc - 1) // send bottom line - my last computed line to the next processor
+            {                           // last processor does not need to share bottom line
+                MPI_Send(&Tnp1[N * ny], ny, MPI_FLOAT, process_id + 1, BETWEEN_NEIGHBORS, MPI_COMM_WORLD);
+            }
 
-        if (process_id > 0) // send top line - my fist computed line to the previous processor
-        {                   // first processor does not need to send top line
-            MPI_Send(&Tnp1[1 * ny], ny, MPI_FLOAT, process_id - 1, BETWEEN_NEIGHBORS, MPI_COMM_WORLD);
-        }
+            if (process_id > 1) // send top line - my fist computed line to the previous processor
+            {                   // first processor does not need to send top line
+                MPI_Send(&Tnp1[1 * ny], ny, MPI_FLOAT, process_id - 1, BETWEEN_NEIGHBORS, MPI_COMM_WORLD);
+            }
 
-        // RECEIVE data from neighbor
-        if (process_id > 0) // receive top line from previous processor to fill the border line
-        {                   // first process does not receive data from previous neighbor
-            MPI_Recv(&Tnp1[0], ny, MPI_FLOAT, process_id - 1, BETWEEN_NEIGHBORS, MPI_COMM_WORLD, &status);
-        }
+            // RECEIVE data from neighbor
+            if (process_id > 1) // receive top line from previous processor to fill the border line
+            {                   // first process does not receive data from previous neighbor
+                MPI_Recv(&Tnp1[0], ny, MPI_FLOAT, process_id - 1, BETWEEN_NEIGHBORS, MPI_COMM_WORLD, &status);
+            }
 
-        if (process_id < nproc - 1) // receive bottom line from next processor to fill the border line
-        {                           // first process does not receive data from previous neighbor
-            MPI_Recv(&Tnp1[(N + 1) * ny], ny, MPI_FLOAT, process_id + 1, BETWEEN_NEIGHBORS, MPI_COMM_WORLD, &status);
+            if (process_id < nproc - 1) // receive bottom line from next processor to fill the border line
+            {                           // first process does not receive data from previous neighbor
+                MPI_Recv(&Tnp1[(N + 1) * ny], ny, MPI_FLOAT, process_id + 1, BETWEEN_NEIGHBORS, MPI_COMM_WORLD, &status);
+            }
         }
 
         // Write the output if needed
-        if ((n + 1) % outputEvery == 0)
+        if ((n + 1) % outputEvery == 0 && process_id != 0)
         {
-            printf("Creating output\n");
-
-            // float *result = (float *)calloc(nx * ny, sizeof(float));
-            float *result = (float *)calloc(nproc * N * ny, sizeof(float));
-
-            printf("Going for gather, %d to copy && %d == %d to write \n", N * ny, nx * ny, nproc * N * ny);
-            // question  should be &Tnp1[1]
-            MPI_Gather(&Tnp1[0], N * ny, MPI_FLOAT, result, nproc * N * ny, MPI_FLOAT, 0, MPI_COMM_WORLD);
-            printf("After gather\n");
-
-            if (process_id == 0)
+            // send data to node 0
+            // last process may compute less than N lines
+            printf("Process %d sending\n", process_id);
+            int computed_lines = (process_id == nproc - 1) ? nx - ((nproc - 1) * N) : N;
+            MPI_Send(&Tnp1[0], computed_lines * ny, MPI_FLOAT, 0, TO_OUTPUT, MPI_COMM_WORLD);
+        }
+        else if ((n + 1) % outputEvery == 0 && process_id == 0)
+        {
+            // centralize all the results
+            float *result = (float *)calloc((N + 1) * nproc * ny, sizeof(float));
+            for (int p = 0; p < nproc - 1; p++)
             {
-                printf("%d == %d\n", nproc*N, nx*ny);
-                printf("%f\n\n\n", *result);
-                writeTemp(result, nx, ny, n + 1);
+                int computed_lines = (p + 1 == nproc - 1) ? nx - ((nproc - 1) * N) : N;
+                MPI_Recv(&result[p * N * ny], computed_lines * ny, MPI_FLOAT, p + 1, TO_OUTPUT, MPI_COMM_WORLD, &status);
             }
+
+            writeTemp(result, nx, ny, n + 1);
+            free(result);
         }
 
         // Swapping the pointers for the next timestep
