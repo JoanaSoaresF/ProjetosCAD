@@ -91,8 +91,8 @@ int main()
     printf("VERSION: %s \n"
            "GENERAL PROBLEM:\n"
            "\tGrid: %d x %d\n"
-           "\tGrid spacing(h): %d\n"
-           "\tDiffusion constant: %a\n"
+           "\tGrid spacing(h): %f\n"
+           "\tDiffusion constant: %f\n"
            "\tNumber of steps:%d\n"
            "\t Output: %d steps\n",
            VERSION, nx, ny, h, a, numSteps, outputEvery);
