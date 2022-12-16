@@ -81,12 +81,14 @@ int main(int argc, char *argv[])
     const int ny = 200;             // Height of the area
     const float a = 0.5;            // Diffusion constant
     const float h = 0.005;          // h=dx=dy  grid spacing
-    const int numSteps = 100;    // Number of time steps to simulate (time=numSteps*dt)
-    const int outputEvery = 100; // How frequently to write output image
+    const int numSteps = 100000;    // Number of time steps to simulate (time=numSteps*dt)
+    const int outputEvery = 100000; // How frequently to write output image
 
     const float h2 = h * h;
 
     const float dt = h2 / (4.0 * a); // Largest stable time step
+
+    float *result;
 
     // MPI configuration
     int nproc, process_id;
@@ -97,6 +99,10 @@ int main(int argc, char *argv[])
     // each process will compute N rows
     int N = (int)ceil((double)nx / (double)nproc);
     // int N = 12;
+
+    if (process_id == 0)
+        result = (float *)calloc(nproc * N * ny, sizeof(float));
+
     if (process_id == 0 && argc > 1)
     {
         printf("\n--------------------------------------------------------------\n");
@@ -184,22 +190,17 @@ int main(int argc, char *argv[])
         // Write the output if needed
         if ((n + 1) % outputEvery == 0)
         {
-            printf("Creating output\n");
-
-            // float *result = (float *)calloc(nx * ny, sizeof(float));
-            float *result = (float *)calloc(nproc * N * ny, sizeof(float));
-
-            printf("Going for gather, %d to copy && %d == %d to write \n", N * ny, nx * ny, nproc * N * ny);
-            // question  should be &Tnp1[1]
-            MPI_Gather(&Tnp1[0], N * ny, MPI_FLOAT, result, nproc * N * ny, MPI_FLOAT, 0, MPI_COMM_WORLD);
-            printf("After gather\n");
+            MPI_Gather(&Tnp1[0], N * ny, MPI_FLOAT, result, N * ny, MPI_FLOAT, 0, MPI_COMM_WORLD);
 
             if (process_id == 0)
             {
-                printf("%d == %d\n", nproc*N, nx*ny);
+                // result = (float *)calloc(nproc * N * ny, sizeof(float));
+                printf("%d == %d\n", nproc * N, nx * ny);
                 printf("%f\n\n\n", *result);
                 writeTemp(result, nx, ny, n + 1);
             }
+
+            // free(result);
         }
 
         // Swapping the pointers for the next timestep

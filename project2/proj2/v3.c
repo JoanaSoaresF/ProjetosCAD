@@ -191,7 +191,7 @@ int main(int argc, char *argv[])
             // last process may compute less than N lines
             printf("Process %d sending\n", process_id);
             int computed_lines = (process_id == nproc - 1) ? nx - ((nproc - 1) * N) : N;
-            MPI_Send(&Tnp1[0], computed_lines * ny, MPI_FLOAT, 0, TO_OUTPUT, MPI_COMM_WORLD);
+            MPI_Send(&Tnp1[0], N * ny, MPI_FLOAT, 0, TO_OUTPUT, MPI_COMM_WORLD);
         }
         else if ((n + 1) % outputEvery == 0 && process_id == 0)
         {
@@ -200,7 +200,7 @@ int main(int argc, char *argv[])
             for (int p = 0; p < nproc - 1; p++)
             {
                 int computed_lines = (p + 1 == nproc - 1) ? nx - ((nproc - 1) * N) : N;
-                MPI_Recv(&result[p * N * ny], computed_lines * ny, MPI_FLOAT, p + 1, TO_OUTPUT, MPI_COMM_WORLD, &status);
+                MPI_Recv(&result[p * N * ny], N * ny, MPI_FLOAT, p + 1, TO_OUTPUT, MPI_COMM_WORLD, &status);
             }
 
             writeTemp(result, nx, ny, n + 1);

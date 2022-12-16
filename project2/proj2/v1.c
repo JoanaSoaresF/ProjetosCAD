@@ -192,8 +192,9 @@ int main(int argc, char *argv[])
                 memcpy(&result[0], &Tnp1[0], N * ny * sizeof(float));
                 for (int p = 1; p < nproc; p++)
                 {
-                    int computed_lines = (p == nproc - 1) ? nx - ((nproc - 1) * N) : N;
-                    MPI_Recv(&result[p * N * ny], computed_lines * ny, MPI_FLOAT, p, TO_OUTPUT, MPI_COMM_WORLD, &status);
+                    // int computed_lines = (p == nproc - 1) ? nx - ((nproc - 1) * N) : N;
+                    MPI_Recv(&result[p * N * ny], N * ny, MPI_FLOAT, p, TO_OUTPUT, MPI_COMM_WORLD, &status);
+                    // printf("Received from process %d \n", p);
                 }
 
                 writeTemp(result, nx, ny, n + 1);
@@ -203,8 +204,9 @@ int main(int argc, char *argv[])
             {
                 // send data to node 0
                 // last process may compute less than N lines
-                int computed_lines = (process_id == nproc - 1) ? nx - ((nproc - 1) * N) : N;
-                MPI_Send(&Tnp1[0], computed_lines * ny, MPI_FLOAT, 0, TO_OUTPUT, MPI_COMM_WORLD);
+                // int computed_lines = (process_id == nproc - 1) ? nx - ((nproc - 1) * N) : N;
+                MPI_Send(&Tnp1[0], N * ny, MPI_FLOAT, 0, TO_OUTPUT, MPI_COMM_WORLD);
+                // printf("Send from process %d \n", process_id);
             }
         }
 

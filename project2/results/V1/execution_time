@@ -1,3 +1,5 @@
+cat OAR*.stdout >> ../results/V1/execution_time && rm OAR*
+
 VERSION: V1 
 GENERAL PROBLEM:
 	Grid: 200 x 200
@@ -102,3 +104,67 @@ GENERAL PROBLEM:
  36.749647
  36.684684
  36.892035
+
+
+--------------------------------------------------------------
+VERSION: V1 
+GENERAL PROBLEM:
+	Grid: 200 x 200
+	Grid spacing(h): 0.005000
+	Diffusion constant: 0.500000
+	Number of steps:100000
+	Output: 100000 steps
+	Number of processes: 32
+	Number of lines per process: 7
+ 8.642672
+ 8.572613
+ 8.448196
+ 8.570643
+ 8.599002
+ 8.567230
+ 8.558998
+ 8.492688
+ 8.610989
+ 8.602641
+
+--------------------------------------------------------------
+VERSION: V1 
+GENERAL PROBLEM:
+	Grid: 200 x 200
+	Grid spacing(h): 0.005000
+	Diffusion constant: 0.500000
+	Number of steps:100000
+	Output: 100000 steps
+	Number of processes: 48
+	Number of lines per process: 5
+ 7.536558
+ 7.984142
+ 7.488888
+ 7.448225
+ 7.155856
+ 7.130438
+ 7.227595
+ 7.361364
+ 7.539970
+ 7.632691
+
+--------------------------------------------------------------
+VERSION: V1 
+GENERAL PROBLEM:
+	Grid: 200 x 200
+	Grid spacing(h): 0.005000
+	Diffusion constant: 0.500000
+	Number of steps:100000
+	Output: 100000 steps
+	Number of processes: 17
+	Number of lines per process: 12
+ 10.797729
+ 10.795088
+ 10.769329
+ 10.767128
+ 10.945178
+ 10.794335
+ 10.849694
+ 10.903616
+ 10.833190
+ 10.864084
