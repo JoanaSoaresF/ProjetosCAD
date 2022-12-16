@@ -183,6 +183,10 @@ int main(int argc, char *argv[])
             }
         }
 
+        if(process_id == 1 && n == outputEvery){
+            writeTemp(Tnp1, N + 2, ny, 3);
+        }
+
         // Write the output if needed
         if ((n + 1) % outputEvery == 0 && process_id != 0)
         {

@@ -72,7 +72,7 @@ In version V1 we start with a simple parallel version where we distribute the li
 
 For the communication necessary to write the output we use the \texttt{MPI\_Send} and \texttt{MPI\_Recv} methods, where all process sends their results to process 0, which aggregates all the results and writes the output file.
 
-In \autoref{fig:executionTimeV1} we can see the execution time for V1, comparing the performance of this version for different numbers of processes.
+In \autoref{fig:executionTimeV1} we can see the execution time for V1, comparing the performance of this version for different numbers of processes. From this graphic we can see the bigger improvement until 16 processes, these processes run on the same machine. For the sake of completeness, we test with 17 processes and we can observe a slight worsening, this is because only one process is running on a different machine, adding communication overhead. Is due to this communication overhead that the improvements aren't bigger when we use 32 or 48 processes.
 
 \begin{figure}[ht]
   \centering
@@ -81,7 +81,7 @@ In \autoref{fig:executionTimeV1} we can see the execution time for V1, comparing
     \begin{axis}[
         ylabel={Execution time (seconds)},
         xlabel={Number of processes},
-        symbolic x coords={1,2, 4, 8, 16, 17, 32},
+        symbolic x coords={1,2, 4, 8, 16, 17, 32, 48},
         xtick=data,
         nodes near coords={
             \pgfmathprintnumber[precision=1]{\pgfplotspointmeta}
@@ -93,8 +93,9 @@ In \autoref{fig:executionTimeV1} we can see the execution time for V1, comparing
           (4,  36.92)
           (8,   18.83)
           (16,   10.23)
-          (17,   0)
-          (32,   0)
+          (17,   10.83)
+          (32,   8.57)
+          (48,   7.45)
         };
     \end{axis}
   \end{tikzpicture}
@@ -103,9 +104,40 @@ In \autoref{fig:executionTimeV1} we can see the execution time for V1, comparing
 \end{figure}
 
 \subsection{V2 --- Gather}\label{sec:v2}
-In this version, we modify version V1 to use the method \texttt{MPI\_Gather} for the phase of writing the output.
+In this version, we modify version V1 to use the method \texttt{MPI\_Gather} for the phase of writing the output. The results are similar to version V1, and are presented in \autoref{fig:executionTimeV2}.
 
 
+\begin{figure}[ht]
+  \centering
+  \begin{tikzpicture}
+
+    \begin{axis}[
+        ylabel={Execution time (seconds)},
+        xlabel={Number of processes},
+        symbolic x coords={1,2, 4, 8, 16, 17, 32, 48},
+        xtick=data,
+        nodes near coords={
+            \pgfmathprintnumber[precision=1]{\pgfplotspointmeta}
+          },
+      ]
+      \addplot[ybar,fill=blue] coordinates {
+          (1,   0)
+          (2,   0)
+          (4,  37.03)
+          (8,   18.91)
+          (16,   10.26)
+          (17,   0)
+          (32,   0)
+          (48,   0)
+        };
+    \end{axis}
+  \end{tikzpicture}
+  \caption{Execution time of V2 varying the number of processes}
+  \label{fig:executionTimeV2}
+\end{figure}
+
+\subsection{V3 --- One node for output}
+In V3 we assign node 0 the function of joining the output of all the other nodes, performing no computation concerning the heat equation. This version was intended as a first step to overlap computation with communication in situations where output is stored more frequently. In this version, we keep synchronous communication.
 
 
 \section{Compilation and Execution Instructions}
