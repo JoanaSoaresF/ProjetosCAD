@@ -12,7 +12,6 @@
 #define VERSION "V2"
 #define BETWEEN_NEIGHBORS 1
 #define TO_OUTPUT 2
-#define NUM_ITERATIONS 1
 
 /* Convert 2D index layout to unrolled 1D layout
  * \param[in] i      Row index
@@ -98,7 +97,6 @@ int main(int argc, char *argv[])
 
     // each process will compute N rows
     int N = (int)ceil((double)nx / (double)nproc);
-    // int N = 12;
 
     if (process_id == 0)
         result = (float *)calloc(nproc * N * ny, sizeof(float));
@@ -132,7 +130,6 @@ int main(int argc, char *argv[])
 
     // Fill in the data on the next step to ensure that the boundaries are identical.
     memcpy(Tnp1, Tn, numElements * sizeof(float));
-    // writeTemp(Tn, N + 2, ny, 0);
 
     MPI_Status status;
 
@@ -194,13 +191,8 @@ int main(int argc, char *argv[])
 
             if (process_id == 0)
             {
-                // result = (float *)calloc(nproc * N * ny, sizeof(float));
-                printf("%d == %d\n", nproc * N, nx * ny);
-                printf("%f\n\n\n", *result);
                 writeTemp(result, nx, ny, n + 1);
             }
-
-            // free(result);
         }
 
         // Swapping the pointers for the next timestep
@@ -215,11 +207,12 @@ int main(int argc, char *argv[])
     {
         clock_t finish = clock();
         printf(" %f\n", (double)(finish - start) / CLOCKS_PER_SEC);
+        free(result);
     }
 
     // Release the memory
     free(Tn);
-    free(Tnp1);
+    free(Tnp1);        
 
     MPI_Finalize();
 

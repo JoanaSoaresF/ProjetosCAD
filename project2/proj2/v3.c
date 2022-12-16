@@ -12,7 +12,6 @@
 #define VERSION "V3"
 #define BETWEEN_NEIGHBORS 1
 #define TO_OUTPUT 2
-#define NUM_ITERATIONS 1
 
 /* Convert 2D index layout to unrolled 1D layout
  * \param[in] i      Row index
