@@ -76,11 +76,11 @@ double timedif(struct timespec *t, struct timespec *t0)
 
 int main(int argc, char *argv[])
 {
-    const int nx = 200;             // Width of the area
-    const int ny = 200;             // Height of the area
-    const float a = 0.5;            // Diffusion constant
-    const float h = 0.005;          // h=dx=dy  grid spacing
-    const int numSteps = 100000;    // Number of time steps to simulate (time=numSteps*dt)
+    const int nx = 200;          // Width of the area
+    const int ny = 200;          // Height of the area
+    const float a = 0.5;         // Diffusion constant
+    const float h = 0.005;       // h=dx=dy  grid spacing
+    const int numSteps = 100000; // Number of time steps to simulate (time=numSteps*dt)
     const int outputEvery = 100; // How frequently to write output image
 
     const float h2 = h * h;
@@ -194,6 +194,11 @@ int main(int argc, char *argv[])
             float *aux = (float *)calloc(numElements, sizeof(float));
             memcpy(aux, Tnp1, numElements * sizeof(float));
             MPI_Isend(&Tnp1[0], N * ny, MPI_FLOAT, 0, TO_OUTPUT, MPI_COMM_WORLD, &request);
+
+            if (n == numSteps)
+            {
+                MPI_Wait(&request, &status);
+            }
         }
         else if ((n + 1) % outputEvery == 0 && process_id == 0)
         {
