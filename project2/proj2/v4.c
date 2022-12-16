@@ -9,7 +9,7 @@
 #include "pngwriter.h"
 #endif
 
-#define VERSION "V3"
+#define VERSION "V4"
 #define BETWEEN_NEIGHBORS 1
 #define TO_OUTPUT 2
 
@@ -116,6 +116,7 @@ int main(int argc, char *argv[])
 
     float *Tn = (float *)calloc(numElements, sizeof(float));
     float *Tnp1 = (float *)calloc(numElements, sizeof(float));
+    float *result = (float *)calloc((N + 1) * nproc * ny, sizeof(float));
 
     // Initializing the data for T0
     if (process_id == 1)
@@ -182,24 +183,37 @@ int main(int argc, char *argv[])
             }
         }
 
+        MPI_Request request;
+        MPI_Status status2;
+
         // Write the output if needed
         if ((n + 1) % outputEvery == 0 && process_id != 0)
         {
             // send data to node 0
             // last process may compute less than N lines
-            MPI_Send(&Tnp1[0], N * ny, MPI_FLOAT, 0, TO_OUTPUT, MPI_COMM_WORLD);
+            float *aux = (float *)calloc(numElements, sizeof(float));
+            memcpy(aux, Tnp1, numElements * sizeof(float));
+            MPI_Isend(&Tnp1[0], N * ny, MPI_FLOAT, 0, TO_OUTPUT, MPI_COMM_WORLD, &request);
         }
         else if ((n + 1) % outputEvery == 0 && process_id == 0)
         {
             // centralize all the results
-            float *result = (float *)calloc((N + 1) * nproc * ny, sizeof(float));
+            MPI_Request *requests = (MPI_Request *)malloc(nproc * sizeof(MPI_Request));
+            MPI_Status *statuss = (MPI_Status *)malloc(nproc * sizeof(MPI_Status));
+
             for (int p = 0; p < nproc - 1; p++)
             {
-                MPI_Recv(&result[p * N * ny], N * ny, MPI_FLOAT, p + 1, TO_OUTPUT, MPI_COMM_WORLD, &status);
+                MPI_Irecv(&result[p * N * ny], N * ny, MPI_FLOAT, p + 1, TO_OUTPUT, MPI_COMM_WORLD, &requests[p]);
+                // MPI_Wait(&request, &status2);
+                // MPI_Recv(&result[p * N * ny], N * ny, MPI_FLOAT, p + 1, TO_OUTPUT, MPI_COMM_WORLD, &status);
+            }
+
+            for (int p = 0; p < nproc - 1; p++)
+            {
+                MPI_Wait(&requests[p], &statuss[p]);
             }
 
             writeTemp(result, nx, ny, n + 1);
-            free(result);
         }
 
         // Swapping the pointers for the next timestep
@@ -211,6 +225,7 @@ int main(int argc, char *argv[])
     // Timing
     if (process_id == 0)
     {
+        // free(result);
         clock_t finish = clock();
         printf(" %f\n", (double)(finish - start) / CLOCKS_PER_SEC);
     }
@@ -218,6 +233,7 @@ int main(int argc, char *argv[])
     // Release the memory
     free(Tn);
     free(Tnp1);
+    free(result);
 
     MPI_Finalize();
 
