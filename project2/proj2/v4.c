@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
     const float a = 0.5;         // Diffusion constant
     const float h = 0.005;       // h=dx=dy  grid spacing
     const int numSteps = 100000; // Number of time steps to simulate (time=numSteps*dt)
-    const int outputEvery = 100; // How frequently to write output image
+    const int outputEvery = 100000; // How frequently to write output image
 
     const float h2 = h * h;
 

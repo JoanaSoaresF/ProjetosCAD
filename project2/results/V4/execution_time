@@ -1,0 +1,42 @@
+
+--------------------------------------------------------------
+VERSION: V4 
+GENERAL PROBLEM:
+	Grid: 200 x 200
+	Grid spacing(h): 0.005000
+	Diffusion constant: 0.500000
+	Number of steps:100000
+	Output: 100 steps
+	Number of processes: 32
+	Number of lines per process: 7
+ 8.415382
+ 8.008896
+ 7.951775
+ 8.080147
+ 8.088053
+ 8.437724
+ 8.457769
+ 7.891478
+ 7.948726
+ 7.927289
+
+--------------------------------------------------------------
+VERSION: V4 
+GENERAL PROBLEM:
+	Grid: 200 x 200
+	Grid spacing(h): 0.005000
+	Diffusion constant: 0.500000
+	Number of steps:100000
+	Output: 100000 steps
+	Number of processes: 32
+	Number of lines per process: 7
+ 8.443669
+ 8.485421
+ 8.588373
+ 8.568902
+ 8.552704
+ 8.668199
+ 8.587842
+ 8.444308
+ 8.486304
+ 8.409450

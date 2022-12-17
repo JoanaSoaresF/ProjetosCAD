@@ -1,0 +1,5 @@
+cat OAR*.stdout >> ../results/V1/execution_time && rm OAR*
+rm images/V*/*.pgm
+ mpicc -o v3 v3.c -lm
+
+ oarsub -l nodes=2 'mpirun --mca btl_tcp_if_include bond0 --hostfile $OAR_NODEFILE v1 y'
