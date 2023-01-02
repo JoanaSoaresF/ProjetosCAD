@@ -1,0 +1,29 @@
+#define STREAM_SIZE 2000
+
+Iteration 0 took 77.521860 seconds
+Average time: 77.521860
+
+Iteration 0 took 75.604239 seconds
+Average time: 75.604239
+
+
+----------------------------------------------------------------------------------------------------------------------
+#define STREAM_SIZE 1000
+
+Iteration 0 took 129.709900 seconds
+Average time: 129.709900
+
+
+----------------------------------------------------------------------------------------------------------------------
+#define STREAM_SIZE 4000
+
+Iteration 0 took 52.207065 seconds
+Average time: 52.207065
+
+----------------------------------------------------------------------------------------------------------------------
+#define STREAM_SIZE 8000Iteration 0 took 38.493909 seconds
+Average time: 38.493909
+Cuda error 12: invalid pitch argument
+Cuda error 12: invalid pitch argument
+Cuda error 12: invalid pitch argument
+Cuda error 1: invalid argument

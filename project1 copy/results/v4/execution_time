@@ -1,0 +1,60 @@
+--------------------------------------------------------------------------------------------
+VERSION: V4 - Streams with shared memory - initial transfer 
+GENERAL PROBLEM:
+	Grid: 200 x 200
+	Grid spacing(h): 0.005000
+	Diffusion constant: 0.500000
+	Number of steps: 100000
+ 	Output: 100000 steps
+CUDA PARAMETERS:
+	Threads Per Block: 16 x 16
+	Blocks: 13 x 13
+STREAMS:
+	Number of streams: 4 x 4
+	Stream Size: 2500
+	Block size with stream: 156 
+
+Iteration 0 took 2.200572 seconds
+Iteration 1 took 2.199954 seconds
+Iteration 2 took 2.199841 seconds
+Iteration 3 took 2.204357 seconds
+Iteration 4 took 2.206608 seconds
+Iteration 5 took 2.205275 seconds
+Iteration 6 took 2.205225 seconds
+Iteration 7 took 2.205536 seconds
+Iteration 8 took 2.205469 seconds
+Iteration 9 took 2.205544 seconds
+
+Average time: 2.203838
+
+--------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------
+VERSION: V4 - Streams with shared memory - initial transfer 
+GENERAL PROBLEM:
+	Grid: 200 x 200
+	Grid spacing(h): 0.005000
+	Diffusion constant: 0.500000
+	Number of steps: 100000
+ 	Output: 100000 steps
+CUDA PARAMETERS:
+	Threads Per Block: 16 x 16
+	Blocks: 13 x 13
+STREAMS:
+	Number of streams: 8 x 8
+	Stream Size: 625
+	Block size with stream: 39 
+
+Iteration 0 took 2.288540 seconds
+Iteration 1 took 2.206409 seconds
+Iteration 2 took 2.208476 seconds
+Iteration 3 took 2.210783 seconds
+Iteration 4 took 2.211250 seconds
+Iteration 5 took 2.211044 seconds
+Iteration 6 took 2.211518 seconds
+Iteration 7 took 2.212057 seconds
+Iteration 8 took 2.211045 seconds
+Iteration 9 took 2.211090 seconds
+
+Average time: 2.218221
+
+--------------------------------------------------------------------------------------------

@@ -1,0 +1,194 @@
+--------------------------------------------------------------------------------------------
+VERSION: V6 - streams in output steps 
+GENERAL PROBLEM:
+	Grid: 200 x 200
+	Grid spacing(h): 0.005000
+	Diffusion constant: 0.500000
+	Number of steps: 100000
+ 	Output: 1000 steps
+CUDA PARAMETERS:
+	Threads Per Block: 16 x 16
+	Blocks: 13 x 13 
+
+STREAMS:
+	Number of streams: 1
+	Stream Size: 40000
+
+Iteration 0 took 2.758471 seconds
+Iteration 1 took 2.821126 seconds
+Iteration 2 took 2.713694 seconds
+Iteration 3 took 2.739532 seconds
+Iteration 4 took 2.730771 seconds
+Iteration 5 took 2.741191 seconds
+Iteration 6 took 2.725628 seconds
+Iteration 7 took 2.730915 seconds
+Iteration 8 took 2.870407 seconds
+Iteration 9 took 2.754321 seconds
+
+Average time: 2.758605
+
+--------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------
+VERSION: V6 - streams in output steps 
+GENERAL PROBLEM:
+	Grid: 200 x 200
+	Grid spacing(h): 0.005000
+	Diffusion constant: 0.500000
+	Number of steps: 100000
+ 	Output: 100 steps
+CUDA PARAMETERS:
+	Threads Per Block: 16 x 16
+	Blocks: 13 x 13 
+
+STREAMS:
+	Number of streams: 1
+	Stream Size: 40000
+
+Iteration 0 took 9.746741 seconds
+Iteration 1 took 9.116930 seconds
+Iteration 2 took 9.245826 seconds
+Iteration 3 took 9.377535 seconds
+Iteration 4 took 9.541156 seconds
+Iteration 5 took 9.378107 seconds
+Iteration 6 took 9.135017 seconds
+Iteration 7 took 9.107942 seconds
+Iteration 8 took 9.211364 seconds
+Iteration 9 took 9.479576 seconds
+
+Average time: 9.334019
+
+--------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------
+VERSION: V6 - streams in output steps 
+GENERAL PROBLEM:
+	Grid: 200 x 200
+	Grid spacing(h): 0.005000
+	Diffusion constant: 0.500000
+	Number of steps: 100000
+ 	Output: 10 steps
+CUDA PARAMETERS:
+	Threads Per Block: 16 x 16
+	Blocks: 13 x 13 
+
+STREAMS:
+	Number of streams: 1
+	Stream Size: 40000
+
+Iteration 0 took 69.230348 seconds
+Iteration 1 took 66.894517 seconds
+Iteration 2 took 66.845542 seconds
+Iteration 3 took 66.236260 seconds
+Iteration 4 took 66.530971 seconds
+Iteration 5 took 66.084640 seconds
+Iteration 6 took 66.468992 seconds
+Iteration 7 took 66.353711 seconds
+Iteration 8 took 66.418859 seconds
+Iteration 9 took 67.182429 seconds
+
+Average time: 66.824627
+
+--------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------
+VERSION: V6 - streams in output steps 
+GENERAL PROBLEM:
+	Grid: 200 x 200
+	Grid spacing(h): 0.005000
+	Diffusion constant: 0.500000
+	Number of steps: 100000
+ 	Output: 1 steps
+CUDA PARAMETERS:
+	Threads Per Block: 16 x 16
+	Blocks: 13 x 13 
+
+STREAMS:
+	Number of streams: 1
+	Stream Size: 40000
+
+Iteration 0 took 338.950241 seconds
+Iteration 1 took 334.282315 seconds
+
+Average time: 336.616278
+
+--------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------
+VERSION: V6 - streams in output steps 
+GENERAL PROBLEM:
+	Grid: 400 x 400
+	Grid spacing(h): 0.005000
+	Diffusion constant: 0.500000
+	Number of steps: 100000
+ 	Output: 1000 steps
+CUDA PARAMETERS:
+	Threads Per Block: 16 x 16
+	Blocks: 26 x 26 
+
+STREAMS:
+	Number of streams: 1
+	Stream Size: 160000
+
+Iteration 0 took 9.306853 seconds
+Iteration 1 took 9.245128 seconds
+Iteration 2 took 9.273047 seconds
+Iteration 3 took 9.268448 seconds
+Iteration 4 took 9.286474 seconds
+Iteration 5 took 9.299726 seconds
+Iteration 6 took 9.333509 seconds
+Iteration 7 took 9.335434 seconds
+Iteration 8 took 9.317673 seconds
+Iteration 9 took 9.430280 seconds
+
+Average time: 9.309657
+
+--------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------
+VERSION: V6 - streams in output steps 
+GENERAL PROBLEM:
+	Grid: 800 x 800
+	Grid spacing(h): 0.005000
+	Diffusion constant: 0.500000
+	Number of steps: 100000
+ 	Output: 1000 steps
+CUDA PARAMETERS:
+	Threads Per Block: 16 x 16
+	Blocks: 51 x 51 
+
+STREAMS:
+	Number of streams: 1
+	Stream Size: 640000
+
+Iteration 0 took 39.049849 seconds
+Iteration 1 took 38.942459 seconds
+Iteration 2 took 38.002148 seconds
+Iteration 3 took 38.082154 seconds
+Iteration 4 took 38.339421 seconds
+Iteration 5 took 38.435711 seconds
+Iteration 6 took 37.933753 seconds
+Iteration 7 took 38.435711 seconds
+Iteration 8 took 38.083738 seconds
+Iteration 9 took 37.832621 seconds
+
+Average time: 38.313756
+
+--------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------
+VERSION: V6 - streams in output steps 
+GENERAL PROBLEM:
+	Grid: 1600 x 1600
+	Grid spacing(h): 0.005000
+	Diffusion constant: 0.500000
+	Number of steps: 100000
+ 	Output: 1000 steps
+CUDA PARAMETERS:
+	Threads Per Block: 16 x 16
+	Blocks: 101 x 101 
+
+STREAMS:
+	Number of streams: 1
+	Stream Size: 2560000
+
+Iteration 0 took 155.289621 seconds
+Iteration 1 took 155.723276 seconds
+
+Average time: 155.506449
+
+--------------------------------------------------------------------------------------------

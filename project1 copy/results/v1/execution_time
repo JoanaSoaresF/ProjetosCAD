@@ -1,0 +1,150 @@
+--------------------------------------------------------------------------------------------
+VERSION: V1 - CUDA with memory transfer every step 
+GENERAL PROBLEM:
+	Grid: 200 x 200
+	Grid spacing(h): 0.005
+	Diffusion constant:  0.5
+	Number of steps:100000
+	Output: 100000 steps
+CUDA PARAMETERS:
+	Threads Per Block: 16 x 16
+	Blocks:  13 x 13 
+Iteration 0 took 35.478622 seconds
+Iteration 1 took 36.336777 seconds
+Iteration 2 took 36.353135 seconds
+Iteration 3 took 36.333049 seconds
+Iteration 4 took 36.352316 seconds
+Iteration 5 took 36.151177 seconds
+Iteration 6 took 36.156171 seconds
+Iteration 7 took 36.647650 seconds
+Iteration 8 took 36.648151 seconds
+Iteration 9 took 36.497300 seconds
+
+Average time: 36.295435
+
+--------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------
+VERSION: V1 - CUDA with memory transfer every step 
+GENERAL PROBLEM:
+	Grid: 200 x 200
+	Grid spacing(h): 0.005000
+	Diffusion constant: 0.500000
+	Number of steps: 100000
+	Output: 100000 steps
+CUDA PARAMETERS:
+	Threads Per Block: 1 x 1
+	Blocks: 201 x 201 
+Iteration 0 took 83.879717 seconds
+Iteration 1 took 85.615785 seconds
+Iteration 2 took 85.566395 seconds
+Iteration 3 took 85.561082 seconds
+Iteration 4 took 85.266359 seconds
+Iteration 5 took 85.287947 seconds
+Iteration 6 took 85.265959 seconds
+Iteration 7 took 85.062382 seconds
+Iteration 8 took 85.062704 seconds
+Iteration 9 took 85.371532 seconds
+
+Average time: 85.193986
+
+--------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------
+VERSION: V1 - CUDA with memory transfer every step 
+GENERAL PROBLEM:
+	Grid: 200 x 200
+	Grid spacing(h): 0.005000
+	Diffusion constant: 0.500000
+	Number of steps: 100000
+	Output: 100000 steps
+CUDA PARAMETERS:
+	Threads Per Block: 2 x 2
+	Blocks: 101 x 101 
+Iteration 0 took 46.346184 seconds
+Iteration 1 took 47.650509 seconds
+Iteration 2 took 47.661082 seconds
+Iteration 3 took 47.648313 seconds
+Iteration 4 took 47.643360 seconds
+Iteration 5 took 47.633565 seconds
+Iteration 6 took 47.416850 seconds
+Iteration 7 took 47.624024 seconds
+Iteration 8 took 47.621949 seconds
+Iteration 9 took 47.648645 seconds
+
+Average time: 47.489448
+
+--------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------
+VERSION: V1 - CUDA with memory transfer every step 
+GENERAL PROBLEM:
+	Grid: 200 x 200
+	Grid spacing(h): 0.005000
+	Diffusion constant: 0.500000
+	Number of steps: 100000
+	Output: 100000 steps
+CUDA PARAMETERS:
+	Threads Per Block: 4 x 4
+	Blocks: 51 x 51 
+Iteration 0 took 36.287996 seconds
+Iteration 1 took 36.984584 seconds
+Iteration 2 took 36.999421 seconds
+Iteration 3 took 37.004885 seconds
+Iteration 4 took 37.164386 seconds
+Iteration 5 took 37.162666 seconds
+Iteration 6 took 37.155611 seconds
+Iteration 7 took 37.177515 seconds
+Iteration 8 took 37.162488 seconds
+Iteration 9 took 37.156228 seconds
+
+Average time: 37.025578
+
+--------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------
+VERSION: V1 - CUDA with memory transfer every step 
+GENERAL PROBLEM:
+	Grid: 200 x 200
+	Grid spacing(h): 0.005000
+	Diffusion constant: 0.500000
+	Number of steps: 100000
+	Output: 100000 steps
+CUDA PARAMETERS:
+	Threads Per Block: 8 x 8
+	Blocks: 26 x 26 
+Iteration 0 took 34.986390 seconds
+Iteration 1 took 36.107228 seconds
+Iteration 2 took 36.091934 seconds
+Iteration 3 took 36.099850 seconds
+Iteration 4 took 36.580245 seconds
+Iteration 5 took 36.578031 seconds
+Iteration 6 took 36.590814 seconds
+Iteration 7 took 36.096874 seconds
+Iteration 8 took 36.095230 seconds
+Iteration 9 took 36.096675 seconds
+
+Average time: 36.132327
+
+--------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------
+VERSION: V1 - CUDA with memory transfer every step 
+GENERAL PROBLEM:
+	Grid: 200 x 200
+	Grid spacing(h): 0.005000
+	Diffusion constant: 0.500000
+	Number of steps: 100000
+	Output: 100000 steps
+CUDA PARAMETERS:
+	Threads Per Block: 32 x 32
+	Blocks: 7 x 7 
+Iteration 0 took 36.228688 seconds
+Iteration 1 took 37.631412 seconds
+Iteration 2 took 37.635983 seconds
+Iteration 3 took 37.638788 seconds
+Iteration 4 took 37.632158 seconds
+Iteration 5 took 37.622967 seconds
+Iteration 6 took 37.615121 seconds
+Iteration 7 took 37.621104 seconds
+Iteration 8 took 37.621182 seconds
+Iteration 9 took 37.631902 seconds
+
+Average time: 37.487930
+
+--------------------------------------------------------------------------------------------

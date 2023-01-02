@@ -1,0 +1,21 @@
+==233909== NVPROF is profiling process 233909, command: ./v2
+Iteration 0 took 2.893735 seconds
+Average time: 2.893735
+==233909== Profiling application: ./v2
+==233909== Profiling result:
+            Type  Time(%)      Time     Calls       Avg       Min       Max  Name
+ GPU activities:  100.00%  2.22407s    100001  22.240us  16.959us  36.159us  evolve_kernel(float const *, float*, int, int, float, float, float)
+                    0.00%  55.743us         2  27.871us  27.616us  28.127us  [CUDA memcpy HtoD]
+                    0.00%  48.094us         2  24.047us  23.967us  24.127us  [CUDA memcpy DtoH]
+      API calls:   82.51%  2.11026s    100001  21.102us  9.4450us  23.636ms  cudaLaunchKernel
+                   15.72%  402.08ms         2  201.04ms  10.420us  402.07ms  cudaMalloc
+                    1.49%  38.052ms    100001     380ns     273ns  867.59us  cudaGetLastError
+                    0.24%  6.1297ms         4  1.5324ms  65.063us  5.8830ms  cudaMemcpy
+                    0.01%  358.28us       101  3.5470us     260ns  196.20us  cuDeviceGetAttribute
+                    0.01%  327.66us         1  327.66us  327.66us  327.66us  cuDeviceTotalMem
+                    0.01%  288.72us         2  144.36us  36.825us  251.89us  cudaFree
+                    0.01%  133.32us         1  133.32us  133.32us  133.32us  cuDeviceGetName
+                    0.00%  9.2780us         1  9.2780us  9.2780us  9.2780us  cuDeviceGetPCIBusId
+                    0.00%  3.6280us         3  1.2090us     395ns  1.8370us  cuDeviceGetCount
+                    0.00%  1.8380us         2     919ns     605ns  1.2330us  cuDeviceGet
+                    0.00%     684ns         1     684ns     684ns     684ns  cuDeviceGetUuid

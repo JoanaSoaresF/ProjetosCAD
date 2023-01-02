@@ -1,0 +1,4 @@
+#define BLOCK_SIZE 16
+#define STREAMCOUNT_X 4
+#define STREAMCOUNT_Y 4
+
